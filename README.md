@@ -9,7 +9,7 @@ ma ułatwić ten proces i pozwolić na łatwe wprowadzanie zmian dowolnego produ
 
 ## Diagram klas ##
 
-
+![](https://raw.githubusercontent.com/JNeubau/Inventory-Manager/main/uml.png)
 
 ## Wymagania systemowe ##
 
