@@ -1,23 +1,31 @@
 #pragma once
 
 #include <string>
-using namespace std;
+
+#include "database.h"
+#include "init.h"
 
 class User {
-public:
+private:
     // TODO:
     //  1) rename the User variables,
-    //  2) create appropriate function to pass the variables and protect them (make them private!)
-    //  3) when the database will work, implement isActive variable to check if user is logged into the system
-    string selfLogin;
-    string selfPassword;
-    string selfEmail;
+    //  2) when the database will work, implement isActive variable to check if user is logged into the system
+    char *selfLogin = nullptr;
+    char *selfPassword = nullptr;
+    char *selfEmail = nullptr;
     // bool isActive;
 
 public:
-    User(string login, string password, string email) {
+    User() = default;;
+    ~User() {
+        free(selfLogin);
+        free(selfPassword);
+        free(selfEmail);
+    };
+    void registerUser(char* login, char* password, char* email) {
         selfLogin = login;
         selfPassword = password;
         selfEmail = email;
+        sqldb.insertData(selfLogin, selfPassword, selfEmail);
     }
 };
