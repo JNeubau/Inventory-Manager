@@ -4,4 +4,5 @@
 
 // TODO: find better solution to initialize the database
 
-static Database sqldb("../database/sqlite3.db");  // change if needed
+inline Database sqldb("../database/sqlite3.db");  // change if needed
+inline int userIndex = 0;

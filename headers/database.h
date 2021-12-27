@@ -48,24 +48,31 @@ public:
         sqlite3_close(db);
     }
 
-    void createTable() {
-        // TODO: reformat the function to work on passed table/query as parameter
-
+    void createTable(char* table) {
         /* function creating SQL table */
 
-        sql = "CREATE TABLE USERS ("
-              "ID INTEGER PRIMARY KEY AUTOINCREMENT,"
-              "LOGIN          CHAR(50)  NOT NULL,"
-              "PASSWORD       CHAR(128) NOT NULL,"
-              "EMAIL          CHAR(50)"
-              ")";
+        if (strcmp(table, "USERS")  == 0) {
+            sql = "CREATE TABLE USERS ("
+                  "ID INTEGER PRIMARY KEY NOT NULL,"
+                  "LOGIN          TEXT    NOT NULL,"
+                  "PASSWORD       TEXT    NOT NULL,"
+                  "EMAIL          TEXT"
+                  ")";
+        } else if (strcmp(table, "PRODUCTS")  == 0){
+            /*
+             products query goes here
+            */
+        } else {
+           cout << "Database Error: wrong table passed" << endl;
+           return;
+        }
 
         // run SQL query
         rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
         // checkDBErrors();
     }
 
-    void insertData(char* login, char* password, char* email) {
+    void insertData(int id, char* login, char* password, char* email) {
         // TODO: override the function and allow it to work both for User objects and Product objects
 
         /* function which inserts the data into the table */
@@ -73,7 +80,7 @@ public:
         char *query = nullptr;
 
         // build a string using asprintf (stdio.h function)
-        asprintf(&query, "INSERT INTO USERS ('LOGIN', 'PASSWORD', 'EMAIL') VALUES ('%s', '%s', '%s');", login, password, email);
+        asprintf(&query, "INSERT INTO USERS ('ID', 'LOGIN', 'PASSWORD', 'EMAIL') VALUES (%d, '%s', '%s', '%s');", id, login, password, email);
 
         // prepare the query
         sqlite3_prepare(db, query, strlen(query), &stmt, nullptr);
@@ -82,18 +89,18 @@ public:
         rc = sqlite3_step(stmt);
         // checkDBErrors();
 
-        // finialize the usage
+        // finalize the usage
         sqlite3_finalize(stmt);
 
         // free up the query space
         free(query);
     }
 
-    void deleteRow(char* id, char* table) {
+    void deleteRow(int id, char* table) {
         /* function which deletes given row from the table */
 
         char *query = nullptr;
-        asprintf(&query, "DELETE FROM '%s' WHERE ID = '%s';", table, id);
+        asprintf(&query, "DELETE FROM '%s' WHERE ID = '%d';", table, id);
         sqlite3_prepare(db, query, strlen(query), &stmt, nullptr);
         rc = sqlite3_step(stmt);
         // checkDBErrors();
@@ -124,6 +131,7 @@ public:
 
     void closeDB() {
         /* close the SQL connection with database */
+
         sqlite3_close(db);
     }
 };
