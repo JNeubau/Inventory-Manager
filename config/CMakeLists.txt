@@ -5,6 +5,13 @@ project(Inventory_Manager)
 
 set(CMAKE_CXX_STANDARD 20)
 
+#link_directories(
+#        "C:/Users/neuba/CodeProjects/PO-proj/Inventory-Manager/Inventory-Manager/sqlite3"
+#)
+add_library(sqlite3
+        "C:/Users/neuba/CodeProjects/PO-proj/Inventory-Manager/Inventory-Manager/sqlite3/sqlite3.c"
+        "C:/Users/neuba/CodeProjects/PO-proj/Inventory-Manager/Inventory-Manager/sqlite3/sqlite3.h")
+
 add_executable(Inventory_Manager
-        ../main.cpp)
+        ../main.cpp ../headers/asprintf.h)
 target_link_libraries(Inventory_Manager LINK_PUBLIC sqlite3)

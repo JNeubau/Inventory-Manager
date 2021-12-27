@@ -1,8 +1,11 @@
 #pragma once
 
+#include "asprintf.h"
 #include <iostream>
+#include <stdio.h>
 #include <cstring>
-#include <sqlite3.h>
+#include "../sqlite3/sqlite3.h"  // use on Windows 10
+/* #include <sqlite3.h> */ // use on Linux
 
 using std::cout;
 using std::endl;
@@ -63,8 +66,8 @@ public:
              products query goes here
             */
         } else {
-           cout << "Database Error: wrong table passed" << endl;
-           return;
+            cout << "Database Error: wrong table passed" << endl;
+            return;
         }
 
         // run SQL query
