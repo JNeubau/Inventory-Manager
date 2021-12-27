@@ -1,3 +1,5 @@
+#include <ctime>
+
 #include "headers/database.h"
 #include "headers/global_variables.h"
 #include "headers/user.h"
@@ -7,6 +9,8 @@ using namespace std;
 int main() {
     // TODO: password should be hashed just after being passed. Proposed place of hashing is user header
 
+    srand((unsigned)time(nullptr));
+
     /* ----- CREATING TABLE -----*/
     cout << "Creating table..." << endl;
     sqldb.createTable("USERS");
@@ -15,9 +19,9 @@ int main() {
 
     /* ----- REGISTERING USERS -----*/
     cout << "Register test..." << endl;
-    user.registerUser(userIndex++, "amalcew", "qwerty", "amalcew@protonmail.com");
-    user.registerUser(userIndex++, "fenix12", "hjklaDfeaw", "jneubauer@gmail.com");
-    user.registerUser(userIndex++, "kthoba", "q1w2e3r4", "kthoba@gmail.com");
+    user.registerUser("Aleksander", "Malcew");
+    user.registerUser("Josefina", "Neubauer");
+    user.registerUser("Khar", "Thoba");
     sqldb.showTable("USERS");
     cout << "Completed\n" << endl;
 
