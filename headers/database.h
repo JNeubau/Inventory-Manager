@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <cstring>
-#include <sqlite3.h>
+#include "../sqlite3/sqlite3.h"
 
 using std::cout;
 using std::endl;
@@ -73,7 +73,7 @@ public:
         char *query = nullptr;
 
         // build a string using asprintf (stdio.h function)
-        asprintf(&query, "INSERT INTO USERS ('LOGIN', 'PASSWORD', 'EMAIL') VALUES ('%s', '%s', '%s');", login, password, email);
+    //    asprintf(&query, "INSERT INTO USERS ('LOGIN', 'PASSWORD', 'EMAIL') VALUES ('%s', '%s', '%s');", login, password, email);
 
         // prepare the query
         sqlite3_prepare(db, query, strlen(query), &stmt, nullptr);
@@ -93,7 +93,7 @@ public:
         /* function which deletes given row from the table */
 
         char *query = nullptr;
-        asprintf(&query, "DELETE FROM '%s' WHERE ID = '%s';", table, id);
+    //    asprintf(&query, "DELETE FROM '%s' WHERE ID = '%s';", table, id);
         sqlite3_prepare(db, query, strlen(query), &stmt, nullptr);
         rc = sqlite3_step(stmt);
         // checkDBErrors();
@@ -105,7 +105,7 @@ public:
         /* function which prints the table */
 
         char *query = nullptr;
-        asprintf(&query, "SELECT * FROM '%s';", table);
+    //    asprintf(&query, "SELECT * FROM '%s';", table);
         rc = sqlite3_exec(db, query, callback, 0, &zErrMsg);
         cout << "-------------------" << endl;
         // checkDBErrors();
@@ -116,7 +116,7 @@ public:
         /* more universal function to pass query to the database, created specifically to debug */
 
         char *query = nullptr;
-        asprintf(&query, "%s", content);
+    //    asprintf(&query, "%s", content);
         rc = sqlite3_exec(db, query, callback, 0, &zErrMsg);
         // checkDBErrors();
         free(query);
