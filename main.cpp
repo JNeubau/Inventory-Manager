@@ -3,6 +3,7 @@
 #include "headers/database.h"
 #include "headers/global_variables.h"
 #include "headers/user.h"
+#include "headers/product.h"
 
 using namespace std;
 
@@ -41,6 +42,12 @@ int main() {
     cout << "Dropping table test..." << endl;
     sqldb.query("DROP TABLE USERS;");
     cout << "Completed\n" << endl;
+
+    /* ----- CREATING TABLE -----*/
+    cout << "Creating table..." << endl;
+    sqldb.createTable("PRODUCTS");
+    cout << "Completed\n" << endl;
+    Product product;
 
     return 0;
 }

@@ -11,3 +11,4 @@ inline Database sqldb("C:\\Users\\neuba\\CodeProjects\\PO-proj\\Inventory-Manage
 /* inline Database sqldb("../database/sqlite3.db"); */
 
 inline int userIndex = 0;
+inline int productIndex = 0;
