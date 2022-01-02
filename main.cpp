@@ -43,11 +43,34 @@ int main() {
     sqldb.query("DROP TABLE USERS;");
     cout << "Completed\n" << endl;
 
-    /* ----- CREATING TABLE -----*/
+
+
+
+    /* ----- CREATING TABLE ----- GIT */
     cout << "Creating table..." << endl;
     sqldb.createTable("PRODUCTS");
     cout << "Completed\n" << endl;
     Product product;
+
+    /* ----- ADDING PRODUCTS -----*/
+    cout << "Add test..." << endl;
+    product.addNewProduct("Srajtasma", 5, 3.99, 84539800, "NULL", "Gospodarstwo Domowe");
+    product.addNewProduct("Piwo", 12, 5.30, 33568700, "NULL", "NULL");
+    product.addNewProduct("Fajki", 2, 17.89, 79359800, "Camel", "Niezbedniki");
+    sqldb.showTable("PRODUCTS");
+    cout << "Completed\n" << endl;
+    // TODO: coś jest nie tak z przekazywaniem ceny za artykuły (dziwnie zaokrągla)
+
+    /* ----- REMOVING PRODUCTS -----*/
+    cout << "Remove test..." << endl;
+    product.deleteProduct(1);
+    sqldb.showTable("PRODUCTS");
+    cout << "Completed\n" << endl;
+
+    /* ----- DROPPING TABLE ----- GIT */
+    cout << "Dropping table test..." << endl;
+    sqldb.query("DROP TABLE PRODUCTS;");
+    cout << "Completed\n" << endl;
 
     return 0;
 }

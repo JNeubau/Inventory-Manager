@@ -61,10 +61,16 @@ public:
                   "PASSWORD       TEXT    NOT NULL,"
                   "EMAIL          TEXT"
                   ")";
-        } else if (strcmp(table, "PRODUCTS")  == 0){
-            /*
-             products query goes here
-            */
+        } else if (strcmp(table, "PRODUCTS")  == 0) {
+            sql = "CREATE TABLE PRODUCTS ("
+                  "ID   INTEGER   PRIMARY KEY   NOT NULL,"
+                  "PRODUCT_NAME     TEXT        NOT NULL,"
+                  "PRIZE            REAL        NOT NULL,"
+                  "QUANTITY         INTEGER     NOT NULL,"
+                  "BARCODE          INTEGER     NOT NULL,"
+                  "PRODUCER_NAME    TEXT,"
+                  "CATEGORY         TEXT"
+                  ")";
         } else {
             cout << "Database Error: wrong table passed" << endl;
             return;
@@ -77,6 +83,7 @@ public:
 
     void insertData(int id, char* login, char* password, char* email) {
         // TODO: override the function and allow it to work both for User objects and Product objects
+        // TODO: można tu spróbować z przeciążeniem zrobić? Tak mi się coś kojarzy że tam było coś pomocnego to tego
 
         /* function which inserts the data into the table */
 
@@ -84,6 +91,31 @@ public:
 
         // build a string using asprintf (stdio.h function)
         asprintf(&query, "INSERT INTO USERS ('ID', 'LOGIN', 'PASSWORD', 'EMAIL') VALUES (%d, '%s', '%s', '%s');", id, login, password, email);
+
+        // prepare the query
+        sqlite3_prepare(db, query, strlen(query), &stmt, nullptr);
+
+        // test the query
+        rc = sqlite3_step(stmt);
+        // checkDBErrors();
+
+        // finalize the usage
+        sqlite3_finalize(stmt);
+
+        // free up the query space
+        free(query);
+    }
+
+    void insertDataForProducts(int id, char* name, float prize, long quantity, int barcode, char* producer, char* category) {
+        /* function which inserts the data into the table */
+        char *query = nullptr;
+
+        if (strcmp(producer, "NULL") == 0) producer = nullptr;
+        if (strcmp(category, "NULL") == 0) category = nullptr;
+
+        // build a string using asprintf (stdio.h function)
+        asprintf(&query, "INSERT INTO PRODUCTS ('ID', 'PRODUCT_NAME', 'PRIZE', 'QUANTITY',"
+                         " 'BARCODE', 'PRODUCER_NAME', 'CATEGORY') VALUES (%d, '%s', '%f', '%ld', '%d', '%s', '%s');", id, name, prize, quantity, barcode, producer, category);
 
         // prepare the query
         sqlite3_prepare(db, query, strlen(query), &stmt, nullptr);
