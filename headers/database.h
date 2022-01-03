@@ -145,6 +145,7 @@ public:
 
     // TODO: new_value must accept other data types
     void updateInfo(int id, char* column, long new_value, char* table) {
+        /* function which updates given value from the table */
         char *query = nullptr;
         asprintf(&query, "UPDATE '%s' SET '%s' = '%ld' WHERE ID = '%d';", table, column, new_value, id);
         sqlite3_prepare(db, query, strlen(query), &stmt, nullptr);
@@ -153,9 +154,6 @@ public:
         sqlite3_finalize(stmt);
         free(query);
     }
-    /* UPDATE table_name
-    SET column1 = value1, column2 = value2...., columnN = valueN
-    WHERE [condition]; */
 
     void showTable(char* table) {
         /* function which prints the table */
