@@ -3,6 +3,7 @@
 #include "asprintf.h"
 #include <iostream>
 #include <stdio.h>
+#include <stdlib.h>
 #include <cstring>
 #include "../sqlite3/sqlite3.h"  // use on Windows 10
 /* #include <sqlite3.h> */ // use on Linux
@@ -17,6 +18,7 @@ private:
     int rc;                // result of opening the file
     char *sql{};           // SQL query
     sqlite3_stmt *stmt{};  // compiled SQLite statement
+    // int data;           // stores id for competing a select query
 
     static int callback(void *NotUsed, int argc, char **argv, char **azColName) {
         for (int i = 0; i < argc; i++) {
@@ -77,7 +79,7 @@ public:
         }
 
         // run SQL query
-        rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
+        rc = sqlite3_exec(db, sql, callback, nullptr, &zErrMsg);
         // checkDBErrors();
     }
 
@@ -160,7 +162,7 @@ public:
 
         char *query = nullptr;
         asprintf(&query, "SELECT * FROM '%s';", table);
-        rc = sqlite3_exec(db, query, callback, 0, &zErrMsg);
+        rc = sqlite3_exec(db, query, callback, nullptr, &zErrMsg);
         cout << "-------------------" << endl;
         // checkDBErrors();
         free(query);
@@ -171,7 +173,7 @@ public:
 
         char *query = nullptr;
         asprintf(&query, "%s", content);
-        rc = sqlite3_exec(db, query, callback, 0, &zErrMsg);
+        rc = sqlite3_exec(db, query, callback, nullptr, &zErrMsg);
         // checkDBErrors();
         free(query);
     }
@@ -180,8 +182,8 @@ public:
 //    int findID(char* table, char* columnName, char* value) {
 //        char *query = nullptr;
 //        asprintf(&query, "SELECT ID FROM '%s' WHERE '%s' = '%s';", table, columnName, value);
-//        rc = sqlite3_exec(db, query, callback, nullptr, &zErrMsg);
-//        return (int)rc;
+//        rc = sqlite3_exec(db, query, callback, (void*)data, &zErrMsg);
+//        return (int)data;
 //    }
 
     void closeDB() {

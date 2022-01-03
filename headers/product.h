@@ -50,6 +50,7 @@ public:
 
     // TODO: można zrobić podklase change ze wszystkimi opcjami zmiany parametru?
     void updateQuantity(int id, long new_value) {
+        // int new_id = sqldb.findID("PRODUCTS", "PRODUCT_NAME", "Fajki");
         quantity = new_value;
         sqldb.updateInfo(id, "QUANTITY", new_value, "PRODUCTS");
     };
