@@ -67,6 +67,12 @@ int main() {
     sqldb.showTable("PRODUCTS");
     cout << "Completed\n" << endl;
 
+    /* ----- UPDATING PRODUCTS -----*/
+    cout << "Update test..." << endl;
+    product.updateQuantity(0, 10);
+    sqldb.showTable("PRODUCTS");
+    cout << "Completed\n" << endl;
+
     /* ----- DROPPING TABLE ----- GIT */
     cout << "Dropping table test..." << endl;
     sqldb.query("DROP TABLE PRODUCTS;");

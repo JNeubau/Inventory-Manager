@@ -143,6 +143,20 @@ public:
         free(query);
     }
 
+    // TODO: new_value must accept other data types
+    void updateInfo(int id, char* column, long new_value, char* table) {
+        char *query = nullptr;
+        asprintf(&query, "UPDATE '%s' SET '%s' = '%ld' WHERE ID = '%d';", table, column, new_value, id);
+        sqlite3_prepare(db, query, strlen(query), &stmt, nullptr);
+        rc = sqlite3_step(stmt);
+        // checkDBErrors();
+        sqlite3_finalize(stmt);
+        free(query);
+    }
+    /* UPDATE table_name
+    SET column1 = value1, column2 = value2...., columnN = valueN
+    WHERE [condition]; */
+
     void showTable(char* table) {
         /* function which prints the table */
 
@@ -163,6 +177,14 @@ public:
         // checkDBErrors();
         free(query);
     }
+
+    // TODO: create a function that searches for the right ID
+//    int findID(char* table, char* columnName, char* value) {
+//        char *query = nullptr;
+//        asprintf(&query, "SELECT ID FROM '%s' WHERE '%s' = '%s';", table, columnName, value);
+//        rc = sqlite3_exec(db, query, callback, nullptr, &zErrMsg);
+//        return (int)rc;
+//    }
 
     void closeDB() {
         /* close the SQL connection with database */
