@@ -84,10 +84,7 @@ public:
     }
 
     void insertData(int id, char* login, char* password, char* email) {
-        // TODO: override the function and allow it to work both for User objects and Product objects
-        // TODO: można tu spróbować z przeciążeniem zrobić? Tak mi się coś kojarzy że tam było coś pomocnego to tego
-
-        /* function which inserts the data into the table */
+        /* function which inserts the data into the USERS table */
 
         char *query = nullptr;
 
@@ -108,16 +105,16 @@ public:
         free(query);
     }
 
-    void insertDataForProducts(int id, char* name, float prize, long quantity, int barcode, char* producer, char* category) {
-        /* function which inserts the data into the table */
+    void insertData(int id, char* name, float prize, long quantity, int barcode, char* producer, char* category) {
+        /* function which inserts the data into the PRODUCTS table */
+
         char *query = nullptr;
 
         if (strcmp(producer, "NULL") == 0) producer = nullptr;
         if (strcmp(category, "NULL") == 0) category = nullptr;
 
         // build a string using asprintf (stdio.h function)
-        asprintf(&query, "INSERT INTO PRODUCTS ('ID', 'PRODUCT_NAME', 'PRIZE', 'QUANTITY',"
-                         " 'BARCODE', 'PRODUCER_NAME', 'CATEGORY') VALUES (%d, '%s', '%f', '%ld', '%d', '%s', '%s');", id, name, prize, quantity, barcode, producer, category);
+        asprintf(&query, "INSERT INTO PRODUCTS ('ID', 'PRODUCT_NAME', 'PRIZE', 'QUANTITY','BARCODE', 'PRODUCER_NAME', 'CATEGORY') VALUES (%d, '%s', '%f', '%ld', '%d', '%s', '%s');", id, name, prize, quantity, barcode, producer, category);
 
         // prepare the query
         sqlite3_prepare(db, query, strlen(query), &stmt, nullptr);
@@ -133,11 +130,11 @@ public:
         free(query);
     }
 
-    void deleteRow(int id, char* table) {
-        /* function which deletes given row from the table */
+    void update(char* table, int id, char* column, long new_value) {
+        /* function which updates given numeric value from the table */
 
         char *query = nullptr;
-        asprintf(&query, "DELETE FROM '%s' WHERE ID = '%d';", table, id);
+        asprintf(&query, "UPDATE '%s' SET '%s' = '%ld' WHERE ID = '%d';", table, column, new_value, id);
         sqlite3_prepare(db, query, strlen(query), &stmt, nullptr);
         rc = sqlite3_step(stmt);
         // checkDBErrors();
@@ -145,11 +142,23 @@ public:
         free(query);
     }
 
-    // TODO: new_value must accept other data types
-    void updateInfo(int id, char* column, long new_value, char* table) {
-        /* function which updates given value from the table */
+    void update(char* table, int id, char* column, char* new_value) {
+        /* function which updates given string value from the table */
+
         char *query = nullptr;
-        asprintf(&query, "UPDATE '%s' SET '%s' = '%ld' WHERE ID = '%d';", table, column, new_value, id);
+        asprintf(&query, "UPDATE '%s' SET '%s' = '%s' WHERE ID = '%d';", table, column, new_value, id);
+        sqlite3_prepare(db, query, strlen(query), &stmt, nullptr);
+        rc = sqlite3_step(stmt);
+        // checkDBErrors();
+        sqlite3_finalize(stmt);
+        free(query);
+    }
+
+    void deleteRow(char* table, int id) {
+        /* function which deletes given row from the table */
+
+        char *query = nullptr;
+        asprintf(&query, "DELETE FROM '%s' WHERE ID = '%d';", table, id);
         sqlite3_prepare(db, query, strlen(query), &stmt, nullptr);
         rc = sqlite3_step(stmt);
         // checkDBErrors();
@@ -163,9 +172,36 @@ public:
         char *query = nullptr;
         asprintf(&query, "SELECT * FROM '%s';", table);
         rc = sqlite3_exec(db, query, callback, nullptr, &zErrMsg);
-        cout << "-------------------" << endl;
+        cout << "<- EOF ->" << endl;
         // checkDBErrors();
         free(query);
+    }
+
+    int find(char* table, char* columnName, char* value) {
+        /* function which returns the ID of given value as parameter  */
+
+        int id;
+        char *query = nullptr;
+        sqlite3_stmt *stmt;
+
+        asprintf(&query, "SELECT ID FROM '%s' WHERE %s = '%s';", table, columnName, value);
+        rc = sqlite3_prepare_v2(db, query, strlen(query), &stmt, nullptr);
+
+        // if rc points to a row, continue the query
+        while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+            id = sqlite3_column_int(stmt, 0);
+        }
+
+        // Free the statement when done.
+        sqlite3_finalize(stmt);
+
+        return id;
+    }
+
+    void closeDB() {
+        /* close the SQL connection with database */
+
+        sqlite3_close(db);
     }
 
     void query(char* content) {
@@ -176,19 +212,5 @@ public:
         rc = sqlite3_exec(db, query, callback, nullptr, &zErrMsg);
         // checkDBErrors();
         free(query);
-    }
-
-    // TODO: create a function that searches for the right ID
-//    int findID(char* table, char* columnName, char* value) {
-//        char *query = nullptr;
-//        asprintf(&query, "SELECT ID FROM '%s' WHERE '%s' = '%s';", table, columnName, value);
-//        rc = sqlite3_exec(db, query, callback, (void*)data, &zErrMsg);
-//        return (int)data;
-//    }
-
-    void closeDB() {
-        /* close the SQL connection with database */
-
-        sqlite3_close(db);
     }
 };

@@ -31,7 +31,7 @@ public:
     };
 
     static void deleteProduct(int id) {
-        sqldb.deleteRow(id, "PRODUCTS");
+        sqldb.deleteRow("PRODUCTS", id);
     };
 
     void addNewProduct(string name, long number, float money, int code, string producer, string category) {   // nowy produkt
@@ -45,14 +45,16 @@ public:
         strcpy(producerName, producer.data());
         strcpy(productCategory, category.data());
 
-        sqldb.insertDataForProducts(ID, productName, prize, quantity, barcode, producerName, productCategory);
+        sqldb.insertData(ID, productName, prize, quantity, barcode, producerName, productCategory);
     };
 
     // TODO: można zrobić podklase change ze wszystkimi opcjami zmiany parametru?
+    //  ~am: ja bym poszedł w przeciążenie funkcji modifyProduct(), będzie ładniej i zaliczymy dodatkowe punkty
+    //  za polimorfizm
     void updateQuantity(int id, long new_value) {
         // int new_id = sqldb.findID("PRODUCTS", "PRODUCT_NAME", "Fajki");
         quantity = new_value;
-        sqldb.updateInfo(id, "QUANTITY", new_value, "PRODUCTS");
+        sqldb.update("PRODUCTS", id, "QUANTITY", new_value);
     };
 
     void changeProducer(string maker) {

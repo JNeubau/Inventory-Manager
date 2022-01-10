@@ -12,6 +12,9 @@ int main() {
 
     srand((unsigned)time(nullptr));
 
+    /* ========================= USERS ========================= */
+    cout << "----- USERS TESTS -----" << endl;
+
     /* ----- CREATING TABLE -----*/
     cout << "Creating table..." << endl;
     sqldb.createTable("USERS");
@@ -21,20 +24,29 @@ int main() {
     /* ----- REGISTERING USERS -----*/
     cout << "Register test..." << endl;
     user.registerUser("Aleksander", "Malcew");
-    user.registerUser("Josefina", "Neubauer");
+    user.registerUser("Asia", "Neubauer");
     user.registerUser("Khar", "Thoba");
     sqldb.showTable("USERS");
     cout << "Completed\n" << endl;
 
     /* ----- UPDATING USERS -----*/
     cout << "Updating test..." << endl;
-    sqldb.query("UPDATE USERS set LOGIN = 'jneubauer' where ID = 1;");
+    sqldb.update("USERS", 1, "login", "jneubauer");
+    sqldb.update("USERS", 1, "password", "qwerty");
     sqldb.showTable("USERS");
     cout << "Completed\n" << endl;
 
+    /* ----- FINDING USERS ----- */
+    cout << "Searching test..." << endl;
+    if ((sqldb.find("USERS", "login", "amalcew") == 0) && (sqldb.find("USERS", "login", "jneubauer") == 1)) {
+        cout << "Completed\n" << endl;
+    } else {
+        cout << "error!" << endl;
+    }
+
     /* ----- DELETING USERS -----*/
     cout << "Deleting test..." << endl;
-    for (int i = 0; i < userIndex; i++) sqldb.deleteRow(i, "USERS");
+    for (int i = 0; i < userIndex; i++) sqldb.deleteRow("USERS", i);
     sqldb.showTable("USERS");
     cout << "Completed\n" << endl;
 
@@ -43,8 +55,8 @@ int main() {
     sqldb.query("DROP TABLE USERS;");
     cout << "Completed\n" << endl;
 
-
-
+    /* ========================= PRODUCTS ========================= */
+    cout << "----- PRODUCTS TESTS -----" << endl;
 
     /* ----- CREATING TABLE ----- GIT */
     cout << "Creating table..." << endl;
@@ -66,6 +78,14 @@ int main() {
     product.deleteProduct(1);
     sqldb.showTable("PRODUCTS");
     cout << "Completed\n" << endl;
+
+    /* ----- FINDING USERS ----- */
+    cout << "Searching test..." << endl;
+    if ((sqldb.find("PRODUCTS", "product_name", "Fajki") == 2) && (sqldb.find("PRODUCTS", "product_name", "Srajtasma") == 0)) {
+        cout << "Completed\n" << endl;
+    } else {
+        cout << "error!" << endl;
+    }
 
     /* ----- UPDATING PRODUCTS -----*/
     cout << "Update test..." << endl;
