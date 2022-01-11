@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <cstring>
 #include "../sqlite3/sqlite3.h"  // use on Windows 10
-/* #include <sqlite3.h> */ // use on Linux
+/* #include <sqlite3.h> */  // use on Linux
 
 using std::cout;
 using std::endl;
@@ -202,6 +202,16 @@ public:
         /* close the SQL connection with database */
 
         sqlite3_close(db);
+    }
+
+    void dropDB(char* table) {
+        /* drop given database passed as parameter */
+
+        char *query = nullptr;
+        asprintf(&query, "DROP TABLE %s", table);
+        rc = sqlite3_exec(db, query, callback, nullptr, &zErrMsg);
+        // checkDBErrors();
+        free(query);
     }
 
     void query(char* content) {

@@ -20,19 +20,20 @@ int main() {
     sqldb.createTable("USERS");
     cout << "Completed\n" << endl;
     User user;
+    Admin admin;
 
     /* ----- REGISTERING USERS -----*/
     cout << "Register test..." << endl;
     user.registerUser("Aleksander", "Malcew");
     user.registerUser("Asia", "Neubauer");
-    user.registerUser("Khar", "Thoba");
+    admin.addUser("kthoba", "strongpassw0rd", "random@email.com");
     sqldb.showTable("USERS");
     cout << "Completed\n" << endl;
 
     /* ----- UPDATING USERS -----*/
     cout << "Updating test..." << endl;
-    sqldb.update("USERS", 1, "login", "jneubauer");
-    sqldb.update("USERS", 1, "password", "qwerty");
+    admin.modifyUser("aneubauer", "login", "jneubauer");
+    admin.modifyUser("kthoba", "email", "kthoba@company.manager.com");
     sqldb.showTable("USERS");
     cout << "Completed\n" << endl;
 
@@ -46,13 +47,14 @@ int main() {
 
     /* ----- DELETING USERS -----*/
     cout << "Deleting test..." << endl;
-    for (int i = 0; i < userIndex; i++) sqldb.deleteRow("USERS", i);
+    admin.deleteUser("amalcew");
+    for (int i = 1; i < userIndex; i++) admin.deleteUser(i);
     sqldb.showTable("USERS");
     cout << "Completed\n" << endl;
 
     /* ----- DROPPING TABLE -----*/
     cout << "Dropping table test..." << endl;
-    sqldb.query("DROP TABLE USERS;");
+    admin.dropDatabase("USERS");
     cout << "Completed\n" << endl;
 
     /* ========================= PRODUCTS ========================= */

@@ -42,12 +42,33 @@ public:
         strcpy(selfEmail, email.data());
         sqldb.insertData(selfID, selfLogin, selfPassword, selfEmail);
     }
+
+    void login(){}
 };
 
 class Admin: public User {
-private:
-    void addUser() {}
+public:  // TODO: methods should be at least protected
+    void addUser(char* login, char* password, char* email) {
+        sqldb.insertData(userIndex++, login, password, email);
+    }
+
     void blockUser() {}
-    void deleteUser() {}
-    void modifyUser(){}
+
+    void deleteUser(int index) {
+        sqldb.deleteRow("USERS", index);
+    }
+
+    void deleteUser(char* login) {
+        int index = sqldb.find("USERS", "login", login);
+        sqldb.deleteRow("USERS", index);
+    }
+
+    void modifyUser(char* login, char* field, char* new_value) {
+        int index = sqldb.find("USERS", "login", login);
+        sqldb.update("USERS", index, field, new_value);
+    }
+
+    void dropDatabase(char* table) {
+    sqldb.dropDB(table);
+}
 };
