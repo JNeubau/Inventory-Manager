@@ -1,8 +1,8 @@
 #include "headers/user.h"
 #include "headers/global_variables.h"
 
-void Admin::addUser(char *login, char *password, char *email) {
-    sqldb.insertData(userIndex++, login, password, email);
+void Admin::addUser(char *login, char *password, char *email, bool isStaff) {
+    sqldb.insertData(userIndex++, login, password, email, isStaff);
 }
 
 void Admin::blockUser() {}

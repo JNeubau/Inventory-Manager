@@ -1,5 +1,6 @@
 #include "headers/database.h"
 #include "headers/asprintf.h"
+#include "headers/global_variables.h"
 
 Database::Database(char *path) {
     /* CONSTRUCTOR */
@@ -8,7 +9,22 @@ Database::Database(char *path) {
     rc = sqlite3_open(path, &db);
     checkDBErrors();
     if (!checkAdmin()) {
-        cout << "where admin\n";
+        cout << "\033[1;31mNo admin account found!\033[0m" << endl;
+        cout << "Create admin account now? [Y/n]: ";
+        while (true) {
+            string flag;
+            cin >> flag;
+            if (flag[0] == 'y' || flag[0] == 'Y'){
+                globalUser.registerUser(true);
+                break;
+            } else if (flag[0] == 'n' || flag[0] == 'N') {
+                break;
+            } else {
+                cout << "Unknown mode, please try again [Y/n]: ";
+                continue;
+            }
+        }
+        //globalUser.registerUser()
     }
 }
 
@@ -19,7 +35,7 @@ Database::~Database() {
     Database::closeDB();
 }
 
-int Database::callback(void *NotUsed, int argc, char **argv, char **azColName)  {
+int Database::callback(void* NotUsed, int argc, char** argv, char** azColName)  {
     for (int i = 0; i < argc; i++) {
         cout << azColName[i] << ": " << argv[i] << endl;
     }
@@ -83,13 +99,13 @@ void Database::createTable(char* table) {
     // checkDBErrors();
 }
 
-void Database::insertData(int id, char* login, char* password, char* email) {
+void Database::insertData(int id, char* login, char* password, char* email, bool isStaff) {
     /* function which inserts the data into the USERS table */
 
     char *query = nullptr;
 
     // build a string using asprintf (stdio.h function)
-    asprintf(&query, "INSERT INTO USERS ('ID', 'LOGIN', 'PASSWORD', 'EMAIL', 'IS_STAFF') VALUES (%d, '%s', '%s', '%s', FALSE);", id, login, password, email);
+    asprintf(&query, "INSERT INTO USERS ('ID', 'LOGIN', 'PASSWORD', 'EMAIL', 'IS_STAFF') VALUES (%d, '%s', '%s', '%s', '%d');", id, login, password, email, isStaff);
 
     // prepare the query
     sqlite3_prepare(db, query, strlen(query), &stmt, nullptr);
@@ -190,7 +206,6 @@ int Database::find(char* table, char* columnName, char* value) {
 bool Database::login(char* login, char* password) {
     /* database method returning boolean variable if given login credentials appear in the database */
 
-    // TODO: rename the variables, it's a mess
     char *query = nullptr;
     sqlite3_stmt *stmt;
 
@@ -198,12 +213,34 @@ bool Database::login(char* login, char* password) {
     rc = sqlite3_prepare_v2(db, query, strlen(query), &stmt, nullptr);
     free(query);
     while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
-        char *pswd = (char *) sqlite3_column_text(stmt, 0);
-        if (strcmp(password, pswd) == 0) {
+        if (strcmp(password, (char *) sqlite3_column_text(stmt, 0)) == 0) {
             return true;
         }
     }
     return false;
+}
+
+int Database::lastId() {
+    // TODO:
+    //  1) make this function more universal
+    //  2) ffs, make this function actually CHECKING if table is not empty
+
+    int id;
+    char *query = nullptr;
+    sqlite3_stmt *stmt;
+
+    asprintf(&query, "SELECT ID FROM 'USERS' WHERE ID = (SELECT MAX(ID) FROM 'USERS');");
+    rc = sqlite3_prepare_v2(db, query, strlen(query), &stmt, nullptr);
+
+    // if rc points to a row, continue the query
+    while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+        id = sqlite3_column_int(stmt, 0);
+    }
+
+    // Free the statement when done.
+    sqlite3_finalize(stmt);
+    free(query);
+    return id + 1;
 }
 
 void Database::closeDB() {

@@ -6,7 +6,6 @@ using std::cout;
 using std::endl;
 
 void Interface::loop() {
-    srand((unsigned)time(nullptr));
     User user;
     user.login();
     cout << ">";

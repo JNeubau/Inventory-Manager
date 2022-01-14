@@ -19,7 +19,7 @@ private:
     sqlite3_stmt *stmt{};  // compiled SQLite statement
     // int data;           // stores id for competing a select query
 
-    static int callback(void *NotUsed, int argc, char **argv, char **azColName);
+    static int callback(void* NotUsed, int argc, char** argv, char** azColName);
 
     void checkDBErrors();
 
@@ -32,7 +32,7 @@ public:
 
     void createTable(char* table);
 
-    void insertData(int id, char* login, char* password, char* email);
+    void insertData(int id, char* login, char* password, char* email, bool isStaff);
 
     void insertData(int id, char* name, float prize, long quantity, int barcode, char* producer, char* category);
 
@@ -45,6 +45,8 @@ public:
     int find(char* table, char* columnName, char* value);
 
     bool login(char* login, char* password);
+
+    int lastId();
 
     void closeDB();
 

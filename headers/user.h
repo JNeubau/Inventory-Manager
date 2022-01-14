@@ -18,6 +18,7 @@ private:
     char *selfLogin = (char *)(malloc(sizeof(char)));
     char *selfPassword = (char *)(malloc(sizeof(char)));
     char *selfEmail = (char *)(malloc(sizeof(char)));
+    bool selfIsStaff;
     // bool isActive;
 
 public:
@@ -25,7 +26,7 @@ public:
 
     ~User();
 
-    void registerUser(string firstName, const string& lastName);
+    void registerUser(bool isStaff);
 
     void login();
 };
@@ -34,7 +35,7 @@ class Admin: public User {
 public:  // TODO: methods should be at least protected
     Admin() = default;
 
-    void addUser(char* login, char* password, char* email);
+    void addUser(char* login, char* password, char* email, bool isStaff);
 
     void blockUser();
 
