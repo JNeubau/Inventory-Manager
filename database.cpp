@@ -7,7 +7,9 @@ Database::Database(char *path) {
     // open database with given path
     rc = sqlite3_open(path, &db);
     checkDBErrors();
-
+    if (!checkAdmin()) {
+        cout << "where admin\n";
+    }
 }
 
 Database::~Database() {
@@ -33,6 +35,21 @@ void Database::checkDBErrors() {
         cout << "Database Error: " << sqlite3_errmsg(db) << endl;
         closeDB();
     }
+}
+
+bool Database::checkAdmin() {
+    /* function checking for administration account in the database */
+
+    char *query = nullptr;
+    sqlite3_stmt *stmt;
+
+    asprintf(&query, "SELECT * FROM 'USERS' WHERE is_staff = 1");
+    rc = sqlite3_prepare_v2(db, query, strlen(query), &stmt, nullptr);
+    free(query);
+    while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+        return true;
+    }
+    return false;
 }
 
 void Database::createTable(char* table) {
@@ -149,17 +166,6 @@ void Database::deleteRow(char* table, int id) {
     free(query);
 }
 
-void Database::showTable(char* table) {
-    /* function which prints the table */
-
-    char *query = nullptr;
-    asprintf(&query, "SELECT * FROM '%s';", table);
-    rc = sqlite3_exec(db, query, callback, nullptr, &zErrMsg);
-    cout << "<- EOF ->" << endl;
-    // checkDBErrors();
-    free(query);
-}
-
 int Database::find(char* table, char* columnName, char* value) {
     /* function which returns the ID of given value as parameter  */
 
@@ -212,6 +218,17 @@ void Database::dropDB(char* table) {
     char *query = nullptr;
     asprintf(&query, "DROP TABLE %s", table);
     rc = sqlite3_exec(db, query, callback, nullptr, &zErrMsg);
+    // checkDBErrors();
+    free(query);
+}
+
+void Database::showTable(char* table) {
+    /* function which prints the table */
+
+    char *query = nullptr;
+    asprintf(&query, "SELECT * FROM '%s';", table);
+    rc = sqlite3_exec(db, query, callback, nullptr, &zErrMsg);
+    cout << "<- EOF ->" << endl;
     // checkDBErrors();
     free(query);
 }

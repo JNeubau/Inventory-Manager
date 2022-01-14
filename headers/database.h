@@ -23,6 +23,8 @@ private:
 
     void checkDBErrors();
 
+    bool checkAdmin();
+
 public:
     explicit Database(char* path);
 
@@ -40,8 +42,6 @@ public:
 
     void deleteRow(char* table, int id);
 
-    void showTable(char* table);
-
     int find(char* table, char* columnName, char* value);
 
     bool login(char* login, char* password);
@@ -49,6 +49,8 @@ public:
     void closeDB();
 
     void dropDB(char* table);
+
+    void showTable(char* table);
 
     void query(char* content);
 };
