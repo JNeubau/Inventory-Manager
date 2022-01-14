@@ -2,6 +2,6 @@
 
 class Interface {
 public:
-    Interface();
+    Interface() = default;;
     void loop();
 };

@@ -1,11 +1,9 @@
-#include <iostream>
 #include "headers/interface.h"
 #include "headers/user.h"
+#include "headers/global_variables.h"
 
 using std::cout;
 using std::endl;
-
-Interface::Interface() {}
 
 void Interface::loop() {
     srand((unsigned)time(nullptr));

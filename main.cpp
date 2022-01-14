@@ -1,8 +1,7 @@
 #include "headers/interface.h"
 
-
 int main() {
-    Interface anInterface;
+    Interface anInterface;\
     anInterface.loop();
     return 0;
 }

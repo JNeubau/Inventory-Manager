@@ -1,5 +1,5 @@
 #pragma once
-
+// TODO: refactor the code to move the implementation to .cpp file and leave here only declaration
 #include <cstdlib>
 #include <string>
 
