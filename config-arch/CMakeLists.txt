@@ -5,6 +5,5 @@ project(Inventory_Manager)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(Inventory_Manager
-        ../main.cpp)
+add_executable(Inventory_Manager ../main.cpp ../interface.cpp)
 target_link_libraries(Inventory_Manager LINK_PUBLIC sqlite3)

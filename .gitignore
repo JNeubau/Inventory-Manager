@@ -35,3 +35,4 @@
 config/CMakeLists.txt
 .idea/
 cmake-build-debug/
+database/sqlite3.db

@@ -198,6 +198,24 @@ public:
         return id;
     }
 
+    bool login(char* login, char* password) {
+        // TODO: rename the variables, it's a mess
+        char *query = nullptr;
+        sqlite3_stmt *stmt;
+
+        asprintf(&query, "SELECT PASSWORD FROM 'USERS' WHERE login = '%s';", login);
+        rc = sqlite3_prepare_v2(db, query, strlen(query), &stmt, nullptr);
+        free(query);
+        while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+            char *pswd = (char *) sqlite3_column_text(stmt, 0);
+            if (strcmp(password, pswd) == 0) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
     void closeDB() {
         /* close the SQL connection with database */
 

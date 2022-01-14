@@ -9,6 +9,8 @@
 #include "aux_functions.h"
 
 using std::string;
+using std::cin;
+using std::cout;
 using std::transform;
 using std::tolower;
 
@@ -43,7 +45,30 @@ public:
         sqldb.insertData(selfID, selfLogin, selfPassword, selfEmail);
     }
 
-    void login(){}
+    void login(){
+        char lgin[32];
+        char pswd[128];
+        int attempts = 1;
+        while (true) {
+            cout << "login: ";
+            cin >> lgin;
+            cout << "password: ";
+            cin >> pswd;
+            bool flag = sqldb.login(lgin, pswd);
+            if (flag) {
+                cout << "login correct";
+                break;
+            } else {
+                if (attempts == 3) {
+                    cout << "\033[1;31mtoo many incorrect attempts, exiting\033[0m\n";
+                    exit(1);
+                }
+                // cout << "login incorrect, please try again\n\n";
+                cout << "\033[1;31mincorrect login or password, please try again\033[0m\n";
+                ++attempts;
+            }
+        }
+    }
 };
 
 class Admin: public User {
