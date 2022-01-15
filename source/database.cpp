@@ -38,25 +38,6 @@ void Database::init() {
         break;
     }
 
-    if (!exists("USERS", "is_staff", 1)) {
-        cout << "\033[1;31mNo admin account found!\033[0m" << endl;
-        cout << "Create admin account now? [Y/n]: ";
-        while (true) {
-            string flag;
-            cin >> flag;
-            if (flag[0] == 'y' || flag[0] == 'Y'){
-                User newUser;
-                newUser.registerUser(true);
-                break;
-            } else if (flag[0] == 'n' || flag[0] == 'N') {
-                break;
-            } else {
-                cout << "Unknown mode, please try again [Y/n]: ";
-                continue;
-            }
-        }
-        //globalUser.registerUser()
-    }
 }
 
 int Database::callback(void* NotUsed, int argc, char** argv, char** azColName)  {
@@ -192,9 +173,8 @@ void Database::deleteRow(char* table, int id) {
 }
 
 bool Database::exists(char* table, char* columnName, int value) {
-    /* function which returns the ID of given value as parameter  */
+    /* function returning bool value, if row exists in passed table  */
 
-    int id;
     char *query = nullptr;
     sqlite3_stmt *stmt;
 

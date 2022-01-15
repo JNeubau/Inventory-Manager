@@ -11,24 +11,22 @@ using std::string;
 
 class User {
 private:
-    // TODO:
+    // TODO [fields]:
     //  1) rename the User variables,
-    //  2) when the database will work, implement isActive variable to check if user is logged into the system
     int selfID;
     char *selfLogin = (char *)(malloc(sizeof(char)));
     char *selfPassword = (char *)(malloc(sizeof(char)));
     char *selfEmail = (char *)(malloc(sizeof(char)));
     bool selfIsStaff;
-    // bool isActive;
 
 public:
     User() = default;;
 
     ~User();
 
-    void registerUser(bool isStaff);
+    void registerUser(string firstName, const string& lastName, bool isStaff);
 
-    void login();
+    bool loginUser(string login, string password);
 };
 
 class Admin: public User {
