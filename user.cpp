@@ -4,17 +4,14 @@
 
 User::~User() {
     /* DECONSTRUCTOR */
-
-    // free the memory
-    free(selfLogin);
-    free(selfPassword);
-    free(selfEmail);
 }
 
 void User::registerUser(bool isStaff) {
     /* function used to register the user into the database */
 
-    // TODO: registration - implement check if passed input is not empty
+    // TODO:
+    //  1) registration - implement check if passed input is not empty
+    //  2) registration - rewrite the input part into the interface, this function should work on passed parameters only
     string firstName;
     string lastName;
     cout << "first name: ";
@@ -24,7 +21,7 @@ void User::registerUser(bool isStaff) {
     string login = firstName[0] + lastName;
     std::transform(login.begin(), login.end(), login.begin(), [](unsigned char c){return std::tolower(c);});
     string email = login + "@company.com";
-    selfID = sqldb.lastId();
+    selfID = sqldb.nextId("USERS");
     // TODO: WTF, why I can't use strcpy below??
     selfLogin = &login[0];
     selfPassword = &generatePassword(8)[0];
@@ -36,7 +33,10 @@ void User::registerUser(bool isStaff) {
 void User::login() {
     /* function used to authenticate user with data stored in database */
 
-    // TODO: login - implement check if passed input is not empty
+    // TODO:
+    //  1) login - implement check if passed input is not empty
+    //  2) login - rewrite the input part into the interface, this function should work on passed parameters only
+
     string login;
     string password;
     int currentAttempt = 1;
@@ -49,14 +49,14 @@ void User::login() {
         strcpy(selfPassword, password.data());
         bool flag = sqldb.login(selfLogin, selfPassword);
         if (flag) {
-            cout << "login correct" << endl;
+            cout << "Hello, " << selfLogin << endl;
             break;
         } else {
             if (currentAttempt++ == loginAttempts) {
-                cout << "\033[1;31mtoo many incorrect attempts, exiting\033[0m" << endl;
+                cout << "\033[1;31mToo many incorrect attempts, exiting\033[0m" << endl;
                 exit(1);
             }
-            cout << "\033[1;31mincorrect login or password, please try again\033[0m" << endl;
+            cout << "\033[1;31mNncorrect login or password, please try again\033[0m" << endl;
         }
     }
 }

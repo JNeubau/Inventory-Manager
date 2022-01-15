@@ -3,5 +3,5 @@
 class Interface {
 public:
     Interface() = default;;
-    void loop();
+    void run();
 };

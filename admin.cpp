@@ -12,12 +12,12 @@ void Admin::deleteUser(int index) {
 }
 
 void Admin::deleteUser(char *login) {
-    int index = sqldb.find("USERS", "login", login);
+    int index = 0;  // sqldb.find("USERS", "login", login);
     sqldb.deleteRow("USERS", index);
 }
 
 void Admin::modifyUser(char *login, char *field, char *new_value) {
-    int index = sqldb.find("USERS", "login", login);
+    int index = 0;  // sqldb.find("USERS", "login", login);
     sqldb.update("USERS", index, field, new_value);
 }
 

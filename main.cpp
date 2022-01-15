@@ -2,6 +2,6 @@
 
 int main() {
     Interface anInterface;\
-    anInterface.loop();
+    anInterface.run();
     return 0;
 }

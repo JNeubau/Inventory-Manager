@@ -2,20 +2,51 @@
 #include "headers/asprintf.h"
 #include "headers/global_variables.h"
 
+// TODO:
+//  1) make sure if every function in this module is really necessary, it seems that a lot of functions is obsolete
+//  2) properly comment the functions
+
+
 Database::Database(char *path) {
     /* CONSTRUCTOR */
 
     // open database with given path
     rc = sqlite3_open(path, &db);
+    init();
     checkDBErrors();
-    if (!checkAdmin()) {
+}
+
+Database::~Database() {
+    /* DECONSTRUCTOR */
+
+    // close the database connection
+    Database::closeDB();
+}
+
+void Database::init() {
+    /* initialization function */
+
+    char *query = nullptr;
+    asprintf(&query, "select 1 from sqlite_master where type='table' and name='USERS'");
+
+    sqlite3_stmt *stmt;
+    rc = sqlite3_prepare_v2(db, query, strlen(query), &stmt, nullptr);
+    free(query);
+    while ((rc = sqlite3_step(stmt)) != SQLITE_ROW) {
+        cout << "'USERS' table not found.\nCreating table..." << endl;
+        createTable("USERS");
+        break;
+    }
+
+    if (!exists("USERS", "is_staff", 1)) {
         cout << "\033[1;31mNo admin account found!\033[0m" << endl;
         cout << "Create admin account now? [Y/n]: ";
         while (true) {
             string flag;
             cin >> flag;
             if (flag[0] == 'y' || flag[0] == 'Y'){
-                globalUser.registerUser(true);
+                User newUser;
+                newUser.registerUser(true);
                 break;
             } else if (flag[0] == 'n' || flag[0] == 'N') {
                 break;
@@ -26,13 +57,6 @@ Database::Database(char *path) {
         }
         //globalUser.registerUser()
     }
-}
-
-Database::~Database() {
-    /* DECONSTRUCTOR */
-
-    // close the database connection
-    Database::closeDB();
 }
 
 int Database::callback(void* NotUsed, int argc, char** argv, char** azColName)  {
@@ -51,21 +75,6 @@ void Database::checkDBErrors() {
         cout << "Database Error: " << sqlite3_errmsg(db) << endl;
         closeDB();
     }
-}
-
-bool Database::checkAdmin() {
-    /* function checking for administration account in the database */
-
-    char *query = nullptr;
-    sqlite3_stmt *stmt;
-
-    asprintf(&query, "SELECT * FROM 'USERS' WHERE is_staff = 1");
-    rc = sqlite3_prepare_v2(db, query, strlen(query), &stmt, nullptr);
-    free(query);
-    while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
-        return true;
-    }
-    return false;
 }
 
 void Database::createTable(char* table) {
@@ -182,25 +191,22 @@ void Database::deleteRow(char* table, int id) {
     free(query);
 }
 
-int Database::find(char* table, char* columnName, char* value) {
+bool Database::exists(char* table, char* columnName, int value) {
     /* function which returns the ID of given value as parameter  */
 
     int id;
     char *query = nullptr;
     sqlite3_stmt *stmt;
 
-    asprintf(&query, "SELECT ID FROM '%s' WHERE %s = '%s';", table, columnName, value);
+    asprintf(&query, "SELECT * FROM '%s' WHERE %s = '%d';", table, columnName, value);
     rc = sqlite3_prepare_v2(db, query, strlen(query), &stmt, nullptr);
 
     // if rc points to a row, continue the query
-    while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
-        id = sqlite3_column_int(stmt, 0);
-    }
-
-    // Free the statement when done.
-    sqlite3_finalize(stmt);
     free(query);
-    return id;
+    while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+        return true;
+    }
+    return false;
 }
 
 bool Database::login(char* login, char* password) {
@@ -220,28 +226,29 @@ bool Database::login(char* login, char* password) {
     return false;
 }
 
-int Database::lastId() {
-    // TODO:
-    //  1) make this function more universal
-    //  2) ffs, make this function actually CHECKING if table is not empty
+int Database::nextId(char* table) {
+    /* returns next id available in passed table */
 
-    int id;
-    char *query = nullptr;
-    sqlite3_stmt *stmt;
+    if (exists(table, "ID", 0)) {
+        int id;
+        char *query = nullptr;
+        sqlite3_stmt *stmt;
 
-    asprintf(&query, "SELECT ID FROM 'USERS' WHERE ID = (SELECT MAX(ID) FROM 'USERS');");
-    rc = sqlite3_prepare_v2(db, query, strlen(query), &stmt, nullptr);
+        asprintf(&query, "SELECT ID FROM '%s' WHERE ID = (SELECT MAX(ID) FROM '%s');", table, table);
+        rc = sqlite3_prepare_v2(db, query, strlen(query), &stmt, nullptr);
 
-    // if rc points to a row, continue the query
-    while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
-        id = sqlite3_column_int(stmt, 0);
+        // if rc points to a row, continue the query
+        while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+            id = sqlite3_column_int(stmt, 0);
+            sqlite3_finalize(stmt);
+            free(query);
+            return id + 1;
+        }
+    } else {
+        return 0;
     }
-
-    // Free the statement when done.
-    sqlite3_finalize(stmt);
-    free(query);
-    return id + 1;
 }
+
 
 void Database::closeDB() {
     /* close the SQL connection with database */
