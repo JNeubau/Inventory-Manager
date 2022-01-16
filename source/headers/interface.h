@@ -11,7 +11,7 @@ class Interface {
 private:
     void init();
 
-    void loop();
+    [[noreturn]] void loop();
 
     void commands(string command);
 

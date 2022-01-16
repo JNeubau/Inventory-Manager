@@ -13,6 +13,4 @@ public:
     void modifyUser(string login, string field, string newValue);
 
     void modifyUser(string login, string field, int newValue);
-
-    void dropDatabase(char* table);
 };

@@ -16,5 +16,7 @@ inline Admin* adminUser = (Admin *) globalUser;
 inline char* pathLinux = "../database/sqlite3.db";
 inline char* pathWindows = "C:\\Users\\neuba\\CodeProjects\\PO-proj\\Inventory-Manager\\Inventory-Manager\\database\\sqlite3.db";
 inline Database sqldb(pathLinux);
-const int loginAttempts = 3;  //
-inline bool verbose = false;  // log database warnings and errors
+const int loginAttempts = 3;
+const int passwordLength = 8;
+const string domain = "@company.com";
+const bool debug = false;  // log database warnings and errors

@@ -3,12 +3,17 @@
 #include "headers/global_variables.h"
 
 void Interface::run() {
+    /* runs the user interface in main module */
+
     init();
     loop();
 }
 
 void Interface::init() {
-    if (!sqldb.exists("USERS", "is_staff", 1)) {
+    /* performs startup checks and prompts sign form */
+
+    // if there is no admin account in the database, ask to create one
+    if (!sqldb.exists("USERS", "IS_STAFF", 1)) {
         cout << "\033[1;31mNo admin account found!\033[0m" << endl;
         while (true) {
             cout << "Create admin account now? [Y/n]: ";
@@ -26,7 +31,8 @@ void Interface::init() {
         }
     }
 
-    if (sqldb.anyExists("USERS")) {  // there is at least one user in database
+    // if there is at least one user in the database, allow to login
+    if (sqldb.anyExists("USERS")) {
         cout << "Select action:\n\t[l] login\n\t[r] register\n\t[x] exit" << endl;
         while (true) {
             cout << "? ";
@@ -46,7 +52,9 @@ void Interface::init() {
                 continue;
             }
         }
-    } else {  // there is no user in the database
+
+    // there is no user in the database, do not allow to login
+    } else {
         cout << "Select action:\n\t[r] register\n\t[x] exit" << endl;
         while (true) {
             cout << "? ";
@@ -66,28 +74,39 @@ void Interface::init() {
     }
 }
 
-void Interface::loop() {
+[[noreturn]] void Interface::loop() {
+    /* program main loop */
+
     string command;
     while (true) {
         if (globalUser->isAdmin()) {
+            // if current user have administrative privileges, color username with blue
             cout << "\033[1;34m" << globalUser->getLogin() << "\033[0m> ";
         } else {
             cout << globalUser->getLogin() << "> ";
         }
+        // TODO [Interface::loop()]: implement check if passed input is not empty
         cin >> command;
         commands(command);
     }
 }
 
 void Interface::commands(string command) {
+    /* executes passed command as string */
+
+    // Due to lack of time I've created simple 'if' block, because more sophisticated solution (like map) does not work
+    // ouf-of-the-box and need a lot of work. ~AM
+    // TODO [Interface::commands()]: implement cleaner solution to the command management
 
     /* --------------------- USER COMMANDS --------------------- */
+    // test command to check if user and admin can both use User's methods
     if (command == "test") {
         globalUser->test();
         return;
     }
-
+    // prints help for standard user
     if ((!globalUser->isAdmin()) && (command == "help")) {
+
         cout << "test - invokes test function" << endl;
         cout << "help - print this help message"<< endl;
         cout << "exit - close the program" << endl;
@@ -95,6 +114,7 @@ void Interface::commands(string command) {
     }
 
     /* --------------------- ADMIN COMMANDS --------------------- */
+    // adds user into the database
     if ((globalUser->isAdmin()) && (command == "add")) {
         // TODO [add command]: implement check if passed input is not empty
         string login, password, email;
@@ -102,7 +122,7 @@ void Interface::commands(string command) {
         cout << "Create new account ->"<< endl;
         cout << "login: ";
         cin >> login;
-        if (!sqldb.exists("USERS", "login", login)) {
+        if (!sqldb.exists("USERS", "LOGIN", login)) {
             cout << "email: ";
             cin >> email;
             cout << "password: ";
@@ -128,28 +148,28 @@ void Interface::commands(string command) {
         }
         return;
     }
-
+    // deletes user from the database
     if ((globalUser->isAdmin()) && (command == "delete")) {
         // TODO [delete command]: implement check if passed input is not empty
         string login;
         cout << "Delete account ->"<< endl;
         cout << "login: ";
         cin >> login;
-        if (sqldb.exists("USERS", "login", login)) {
+        if (sqldb.exists("USERS", "LOGIN", login)) {
             adminUser->deleteUser(login);
         } else {
             cout << "\033[1;31mThere is no such user as '" << login <<"'\033[0m" << endl;
         }
         return;
     }
-
+    // edits the existing user
     if ((globalUser->isAdmin()) && (command == "edit")) {
         // TODO [modify command]: implement check if passed input is not empty
         string login;
         cout << "Edit account ->"<< endl;
         cout << "login: ";
         cin >> login;
-        if (sqldb.exists("USERS", "login", login)) {
+        if (sqldb.exists("USERS", "LOGIN", login)) {
             cout << "Select field to edit: \n\t[i] id\n\t[l] login\n\t[p] password\n\t[e] email\n\t[a] admin permission\n\n\t[x] cancel" << endl;
             while (true) {
                 cout << "? ";
@@ -164,7 +184,7 @@ void Interface::commands(string command) {
                         cout << "new id: ";
                         cin >> newValue;
                         if (!sqldb.exists("USERS", "ID", newValue)) {
-                            adminUser->modifyUser(login, "id", newValue);
+                            adminUser->modifyUser(login, "ID", newValue);
                             break;
                         } else {
                             cout << "\033[1;31mCannot modify id, user with given id already exists\033[0m" << endl;
@@ -179,20 +199,20 @@ void Interface::commands(string command) {
                         string newValue;
                         cout << "new value: ";
                         cin >> newValue;
-                        adminUser->modifyUser(login, "login", newValue);
+                        adminUser->modifyUser(login, "LOGIN", newValue);
                         break;
                     }
                 } else if (flag[0] == 'p' || flag[0] == 'P') {
                     string newValue;
                     cout << "new value: ";
                     cin >> newValue;
-                    adminUser->modifyUser(login, "password", newValue);
+                    adminUser->modifyUser(login, "PASSWORD", newValue);
                     break;
                 } else if (flag[0] == 'e' || flag[0] == 'E') {
                     string newValue;
                     cout << "new value: ";
                     cin >> newValue;
-                    adminUser->modifyUser(login, "email", newValue);
+                    adminUser->modifyUser(login, "EMAIL", newValue);
                     break;
                 } else if (flag[0] == 'a' || flag[0] == 'A') {
                     if (login == adminUser->getLogin()) {
@@ -201,7 +221,7 @@ void Interface::commands(string command) {
                     } else {
                         char* chrLogin = &login[0];
                         bool isStaff = sqldb.isAdmin(chrLogin);
-                        adminUser->modifyUser(login, "is_staff", !isStaff);
+                        adminUser->modifyUser(login, "IS_STAFF", !isStaff);
                         break;
                     }
                 } else if (flag[0] == 'x' || flag[0] == 'X') {
@@ -216,7 +236,7 @@ void Interface::commands(string command) {
         }
         return;
     }
-
+    // prints help for admin
     if ((globalUser->isAdmin()) && (command == "help")) {
         cout << "add - create new user account" << endl;
         cout << "delete - delete existing user account" << endl;
@@ -226,15 +246,19 @@ void Interface::commands(string command) {
         return;
     }
 
+    /* -------------------- GLOBAL COMMANDS -------------------- */
+    // kills the program
     if (command == "exit") {
         exit(1);
     }
-
+    // if no command was executed, give user a tip
     cout << "Command not found, type 'help' for more information" << endl;
 }
 
 void Interface::registerUser(bool isStaff) {
-    // TODO [registerUser()]: implement check if passed input is not empty
+    /* perform user registration*/
+
+    // TODO [Interface::registerUser()]: implement check if passed input is not empty
     string firstName;
     string lastName;
     cout << "Sign up ->" << endl;
@@ -247,7 +271,9 @@ void Interface::registerUser(bool isStaff) {
 }
 
 void Interface::loginUser() {
-    // TODO [login()]: implement check if passed input is not empty
+    /* perform user login and exits the program, if user made too many incorrect attempts */
+
+    // TODO [Interface::login()]: implement check if passed input is not empty
     string login;
     string password;
     cout << "Sign in ->" << endl;

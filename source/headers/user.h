@@ -12,9 +12,10 @@ using std::to_string;
 
 class User {
 protected:
-    // TODO [fields]: rename the User variables,
+    // TODO [User fields]: rename the User variables,
     int selfID;
     char *selfLogin = (char *)(malloc(sizeof(char)));
+    // TODO [User password]: should be stored as a hash
     char *selfPassword = (char *)(malloc(sizeof(char)));
     char *selfEmail = (char *)(malloc(sizeof(char)));
     bool selfIsStaff;
