@@ -2,14 +2,19 @@
 
 #include "database.h"
 #include "user.h"
+#include "admin.h"
 
-// use on Windows 10
-/* inline Database sqldb("C:\\Users\\neuba\\CodeProjects\\PO-proj\\Inventory-Manager\\Inventory-Manager\\database\\sqlite3.db"); */
+/* --------------------- SHARED VARIABLES --------------------- *
+ *         These variables are used in the program and          *
+ *          SHOULD NOT be changed or modified by user           */
+inline User *globalUser = new User;
+inline Admin* adminUser = (Admin *) globalUser;
 
-// use on Linux
-inline Database sqldb("../database/sqlite3.db");
+/* --------------------- GLOBAL VARIABLES --------------------- *
+ *                   Feel free to modify them                   */
 
-inline User globalUser;
-const int loginAttempts = 3;
-inline int userIndex = 0;
-inline int productIndex = 0;
+inline char* pathLinux = "../database/sqlite3.db";
+inline char* pathWindows = "C:\\Users\\neuba\\CodeProjects\\PO-proj\\Inventory-Manager\\Inventory-Manager\\database\\sqlite3.db";
+inline Database sqldb(pathLinux);
+const int loginAttempts = 3;  //
+inline bool verbose = false;  // log database warnings and errors

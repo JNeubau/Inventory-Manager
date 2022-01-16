@@ -3,11 +3,11 @@
 /* #include "../sqlite3/sqlite3.h" */  // use on Windows 10
 #include <sqlite3.h>  // use on Linux
 #include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
 #include <cstring>
+#include <string>
 
 using std::cout;
+using std::string;
 using std::endl;
 
 class Database {
@@ -17,7 +17,6 @@ private:
     int rc;                // result of opening the file
     char *sql{};           // SQL query
     sqlite3_stmt *stmt{};  // compiled SQLite statement
-    // int data;           // stores id for competing a select query
 
     void init();
 
@@ -25,12 +24,13 @@ private:
 
     void checkDBErrors();
 
+protected:
+    void createTable(char* table);
+
 public:
     explicit Database(char* path);
 
     ~Database();
-
-    void createTable(char* table);
 
     void insertData(int id, char* login, char* password, char* email, bool isStaff);
 
@@ -42,17 +42,21 @@ public:
 
     void deleteRow(char* table, int id);
 
+    int find(char* table, char* columnName, char* value);
+
+    bool anyExists(char* table);
+
     bool exists(char* table, char* columnName, int value);
 
-    bool login(char* login, char* password);
+    bool exists(char* table, char* columnName, string value);
+
+    bool authenticate(char* login, char* password);
+
+    bool isAdmin(char* login);
 
     int nextId(char* table);
 
     void closeDB();
 
     void dropDB(char* table);
-
-    void showTable(char* table);
-
-    void query(char* content);
 };

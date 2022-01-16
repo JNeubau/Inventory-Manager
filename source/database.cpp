@@ -8,29 +8,21 @@
 
 
 Database::Database(char *path) {
-    /* CONSTRUCTOR */
-
-    // open database with given path
     rc = sqlite3_open(path, &db);
-    init();
     checkDBErrors();
+    init();
 }
 
 Database::~Database() {
-    /* DECONSTRUCTOR */
-
-    // close the database connection
     Database::closeDB();
 }
 
 void Database::init() {
-    /* initialization function */
-
     char *query = nullptr;
     asprintf(&query, "select 1 from sqlite_master where type='table' and name='USERS'");
-
     sqlite3_stmt *stmt;
     rc = sqlite3_prepare_v2(db, query, strlen(query), &stmt, nullptr);
+    if (verbose) checkDBErrors();
     free(query);
     while ((rc = sqlite3_step(stmt)) != SQLITE_ROW) {
         cout << "'USERS' table not found.\nCreating table..." << endl;
@@ -49,18 +41,13 @@ int Database::callback(void* NotUsed, int argc, char** argv, char** azColName)  
 }
 
 void Database::checkDBErrors() {
-    /* function used in Database() constructor, to check for potential errors*/
-
     if (rc) {
-        // show an error message
-        cout << "Database Error: " << sqlite3_errmsg(db) << endl;
+        cout << "\033[33mDatabase Warning: " << sqlite3_errmsg(db) <<"\033[0m" << endl;
         closeDB();
     }
 }
 
 void Database::createTable(char* table) {
-    /* function creating SQL table */
-
     if (strcmp(table, "USERS")  == 0) {
         sql = "CREATE TABLE USERS ("
               "ID INTEGER PRIMARY KEY NOT NULL,"
@@ -83,105 +70,81 @@ void Database::createTable(char* table) {
         cout << "Database Error: wrong table passed" << endl;
         return;
     }
-
-    // run SQL query
     rc = sqlite3_exec(db, sql, callback, nullptr, &zErrMsg);
-    // checkDBErrors();
+    if (verbose) checkDBErrors();
 }
 
 void Database::insertData(int id, char* login, char* password, char* email, bool isStaff) {
-    /* function which inserts the data into the USERS table */
-
     char *query = nullptr;
-
-    // build a string using asprintf (stdio.h function)
     asprintf(&query, "INSERT INTO USERS ('ID', 'LOGIN', 'PASSWORD', 'EMAIL', 'IS_STAFF') VALUES (%d, '%s', '%s', '%s', '%d');", id, login, password, email, isStaff);
-
-    // prepare the query
     sqlite3_prepare(db, query, strlen(query), &stmt, nullptr);
-
-    // test the query
     rc = sqlite3_step(stmt);
-    // checkDBErrors();
-
-    // finalize the usage
-    sqlite3_finalize(stmt);
-
-    // free up the query space
+    if (verbose) checkDBErrors();
     free(query);
+    sqlite3_finalize(stmt);
 }
 
 void Database::insertData(int id, char* name, float prize, long quantity, int barcode, char* producer, char* category) {
-    /* function which inserts the data into the PRODUCTS table */
-
     char *query = nullptr;
-
     if (strcmp(producer, "NULL") == 0) producer = nullptr;
     if (strcmp(category, "NULL") == 0) category = nullptr;
-
-    // build a string using asprintf (stdio.h function)
     asprintf(&query, "INSERT INTO PRODUCTS ('ID', 'PRODUCT_NAME', 'PRIZE', 'QUANTITY','BARCODE', 'PRODUCER_NAME', 'CATEGORY') VALUES (%d, '%s', '%f', '%ld', '%d', '%s', '%s');", id, name, prize, quantity, barcode, producer, category);
-
-    // prepare the query
     sqlite3_prepare(db, query, strlen(query), &stmt, nullptr);
-
-    // test the query
     rc = sqlite3_step(stmt);
-    // checkDBErrors();
-
-    // finalize the usage
-    sqlite3_finalize(stmt);
-
-    // free up the query space
+    if (verbose) checkDBErrors();
     free(query);
+    sqlite3_finalize(stmt);
 }
 
 void Database::update(char* table, int id, char* column, long new_value) {
-    /* function which updates given numeric value from the table */
-
     char *query = nullptr;
     asprintf(&query, "UPDATE '%s' SET '%s' = '%ld' WHERE ID = '%d';", table, column, new_value, id);
     sqlite3_prepare(db, query, strlen(query), &stmt, nullptr);
     rc = sqlite3_step(stmt);
-    // checkDBErrors();
-    sqlite3_finalize(stmt);
+    if (verbose) checkDBErrors();
     free(query);
+    sqlite3_finalize(stmt);
 }
 
 void Database::update(char* table, int id, char* column, char* new_value) {
-    /* function which updates given string value from the table */
-
     char *query = nullptr;
     asprintf(&query, "UPDATE '%s' SET '%s' = '%s' WHERE ID = '%d';", table, column, new_value, id);
     sqlite3_prepare(db, query, strlen(query), &stmt, nullptr);
     rc = sqlite3_step(stmt);
-    // checkDBErrors();
-    sqlite3_finalize(stmt);
+    if (verbose) checkDBErrors();
     free(query);
+    sqlite3_finalize(stmt);
 }
 
 void Database::deleteRow(char* table, int id) {
-    /* function which deletes given row from the table */
-
     char *query = nullptr;
     asprintf(&query, "DELETE FROM '%s' WHERE ID = '%d';", table, id);
     sqlite3_prepare(db, query, strlen(query), &stmt, nullptr);
     rc = sqlite3_step(stmt);
-    // checkDBErrors();
-    sqlite3_finalize(stmt);
+    if (verbose) checkDBErrors();
     free(query);
+    sqlite3_finalize(stmt);
 }
 
-bool Database::exists(char* table, char* columnName, int value) {
-    /* function returning bool value, if row exists in passed table  */
+int Database::find(char* table, char* columnName, char* value) {
+    char *query = nullptr;
+    int id;
+    asprintf(&query, "SELECT ID FROM '%s' WHERE %s = '%s';", table, columnName, value);
+    rc = sqlite3_prepare_v2(db, query, strlen(query), &stmt, nullptr);
+    if (verbose) checkDBErrors();
+    free(query);
+    while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+        id = sqlite3_column_int(stmt, 0);
+    }
+    return id;
+}
 
+bool Database::anyExists(char* table) {
     char *query = nullptr;
     sqlite3_stmt *stmt;
-
-    asprintf(&query, "SELECT * FROM '%s' WHERE %s = '%d';", table, columnName, value);
+    asprintf(&query, "SELECT * FROM '%s';", table);
     rc = sqlite3_prepare_v2(db, query, strlen(query), &stmt, nullptr);
-
-    // if rc points to a row, continue the query
+    if (verbose) checkDBErrors();
     free(query);
     while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
         return true;
@@ -189,14 +152,40 @@ bool Database::exists(char* table, char* columnName, int value) {
     return false;
 }
 
-bool Database::login(char* login, char* password) {
-    /* database method returning boolean variable if given login credentials appear in the database */
+bool Database::exists(char* table, char* columnName, int value) {
+    char *query = nullptr;
+    sqlite3_stmt *stmt;
+    asprintf(&query, "SELECT * FROM '%s' WHERE %s = '%d';", table, columnName, value);
+    rc = sqlite3_prepare_v2(db, query, strlen(query), &stmt, nullptr);
+    if (verbose) checkDBErrors();
+    free(query);
+    while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+        return true;
+    }
+    return false;
+}
 
+bool Database::exists(char *table, char *columnName, string value) {
+    char* searchValue = &value[0];
+    char* query = nullptr;
+    sqlite3_stmt *stmt;
+    asprintf(&query, "SELECT * FROM '%s' WHERE %s = '%s';", table, columnName, searchValue);
+    rc = sqlite3_prepare_v2(db, query, strlen(query), &stmt, nullptr);
+    if (verbose) checkDBErrors();
+    free(query);
+    while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+        return true;
+    }
+    return false;
+}
+
+bool Database::authenticate(char* login, char* password) {
     char *query = nullptr;
     sqlite3_stmt *stmt;
 
     asprintf(&query, "SELECT PASSWORD FROM 'USERS' WHERE login = '%s';", login);
     rc = sqlite3_prepare_v2(db, query, strlen(query), &stmt, nullptr);
+    if (verbose) checkDBErrors();
     free(query);
     while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
         if (strcmp(password, (char *) sqlite3_column_text(stmt, 0)) == 0) {
@@ -206,63 +195,49 @@ bool Database::login(char* login, char* password) {
     return false;
 }
 
-int Database::nextId(char* table) {
-    /* returns next id available in passed table */
+bool Database::isAdmin(char* login) {
+    char *query = nullptr;
+    sqlite3_stmt *stmt;
+    int isStaff;
+    asprintf(&query, "SELECT is_staff FROM 'USERS' WHERE LOGIN = '%s';", login);
+    rc = sqlite3_prepare_v2(db, query, strlen(query), &stmt, nullptr);
+    if (verbose) checkDBErrors();
+    free(query);
+    while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+        isStaff = sqlite3_column_int(stmt, 0);
+        if (isStaff == 1) {
+            return true;
+        }
+    }
+    return false;
+}
 
+int Database::nextId(char* table) {
     if (exists(table, "ID", 0)) {
         int id;
         char *query = nullptr;
         sqlite3_stmt *stmt;
-
         asprintf(&query, "SELECT ID FROM '%s' WHERE ID = (SELECT MAX(ID) FROM '%s');", table, table);
         rc = sqlite3_prepare_v2(db, query, strlen(query), &stmt, nullptr);
-
-        // if rc points to a row, continue the query
+        if (verbose) checkDBErrors();
+        free(query);
         while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
             id = sqlite3_column_int(stmt, 0);
             sqlite3_finalize(stmt);
-            free(query);
             return id + 1;
         }
-    } else {
-        return 0;
     }
+    return 0;
 }
 
-
 void Database::closeDB() {
-    /* close the SQL connection with database */
-
     sqlite3_close(db);
 }
 
 void Database::dropDB(char* table) {
-    /* drop given database passed as parameter */
-
     char *query = nullptr;
     asprintf(&query, "DROP TABLE %s", table);
     rc = sqlite3_exec(db, query, callback, nullptr, &zErrMsg);
-    // checkDBErrors();
-    free(query);
-}
-
-void Database::showTable(char* table) {
-    /* function which prints the table */
-
-    char *query = nullptr;
-    asprintf(&query, "SELECT * FROM '%s';", table);
-    rc = sqlite3_exec(db, query, callback, nullptr, &zErrMsg);
-    cout << "<- EOF ->" << endl;
-    // checkDBErrors();
-    free(query);
-}
-
-void Database::query(char* content) {
-    /* more universal function to pass query to the database, created specifically to debug */
-
-    char *query = nullptr;
-    asprintf(&query, "%s", content);
-    rc = sqlite3_exec(db, query, callback, nullptr, &zErrMsg);
-    // checkDBErrors();
+    if (verbose) checkDBErrors();
     free(query);
 }

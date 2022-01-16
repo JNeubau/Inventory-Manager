@@ -1,23 +1,23 @@
 #pragma once
 
-#include <map>
 #include <iostream>
 #include <string>
 
-using std::map;
 using std::string;
+using std::cout;
+using std::endl;
 
 class Interface {
 private:
-    map<string, void (*)()> commands;
     void init();
 
-    // void loop();
+    void loop();
+
+    void commands(string command);
 
     void registerUser(bool isStaff);
 
     void loginUser();
-
 
 public:
     Interface() = default;;
