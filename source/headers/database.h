@@ -1,7 +1,7 @@
 #pragma once
 
-/* #include "../sqlite3/sqlite3.h" */  // use on Windows 10
-#include <sqlite3.h>  // use on Linux
+#include "../../sqlite3/sqlite3.h"   // use on Windows 10
+//#include <sqlite3.h>  // use on Linux
 #include <iostream>
 #include <cstring>
 #include <string>

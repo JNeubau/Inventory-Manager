@@ -1,5 +1,5 @@
+#include <asprintf.h>
 #include "headers/database.h"
-#include "headers/asprintf.h"
 #include "headers/global_variables.h"
 
 // TODO: make sure if every function in this module is really necessary, it seems that a lot of functions is obsolete
