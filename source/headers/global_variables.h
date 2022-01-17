@@ -20,3 +20,5 @@ const int loginAttempts = 3;
 const int passwordLength = 8;
 const string domain = "@company.com";
 const bool debug = false;  // log database warnings and errors
+
+inline int productIndex = 0;
