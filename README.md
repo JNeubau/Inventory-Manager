@@ -23,7 +23,7 @@ ma ułatwić ten proces i pozwolić na łatwe wprowadzanie zmian dowolnego produ
     * tworzenie przez użytkownika własnych kategorii produktów
 
 2. Wymagania pozafunkcjonalne
-    * prosty i przejrzysty interfejs użytkownika,
+    * prosty i przejrzysty interfejs użytkownika, wykonany terminalowo
     * możliwość wprowadzenia dużej ilości produktów do bazy,
     * regularność zapisów do bazy danych
 
