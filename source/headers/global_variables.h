@@ -9,6 +9,7 @@
  *          SHOULD NOT be changed or modified by user           */
 inline User *globalUser = new User;
 inline Admin* adminUser = (Admin *) globalUser;
+inline int productIndex = 0;
 
 /* --------------------- GLOBAL VARIABLES --------------------- *
  *                   Feel free to modify them                   */
@@ -20,5 +21,3 @@ const int loginAttempts = 3;
 const int passwordLength = 8;
 const string domain = "@company.com";
 const bool debug = false;  // log database warnings and errors
-
-inline int productIndex = 0;

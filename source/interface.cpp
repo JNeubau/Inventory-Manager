@@ -246,6 +246,9 @@ void Interface::commands(string command) {
         return;
     }
 
+    /* --------------------- PRODUCT COMMANDS --------------------- */
+
+
     /* -------------------- GLOBAL COMMANDS -------------------- */
     // kills the program
     if (command == "exit") {
