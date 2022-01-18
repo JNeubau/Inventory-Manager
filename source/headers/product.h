@@ -23,8 +23,8 @@ public:
     static void deleteProduct(int);
     void addNewProduct(string, long, float, int, string, string);
 
-    void modifyProduct(int, string);
-    void modifyProduct(int, long);   // quantity
-    void modifyProduct(int, float);   // new_prize
-    void modifyProduct(int, int);   // barcode
+    void modifyProduct(char*, char*, char*);    // pozostałę
+    void modifyProduct(char*, long);   // quantity
+    void modifyProduct(char*, float);   // new_prize
+    void modifyProduct(char*, int);   // barcode
 };

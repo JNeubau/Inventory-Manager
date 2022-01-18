@@ -132,6 +132,18 @@ void Database::update(char* table, int id, char* column, long new_value) {
     sqlite3_finalize(stmt);
 }
 
+void Database::update(char* table, int id, char* column, float new_value) {
+    /* modifies record's numeric field */
+
+    char *query = nullptr;
+    asprintf(&query, "UPDATE '%s' SET '%s' = '%f' WHERE ID = '%d';", table, column, new_value, id);
+    sqlite3_prepare(db, query, strlen(query), &stmt, nullptr);
+    rc = sqlite3_step(stmt);
+    checkDBErrors();
+    free(query);
+    sqlite3_finalize(stmt);
+}
+
 void Database::update(char* table, int id, char* column, char* new_value) {
     /* modifies record's text field */
 

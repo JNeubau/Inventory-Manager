@@ -33,11 +33,10 @@ public:
     ~Database();
 
     void insertData(int id, char* login, char* password, char* email, bool isStaff);
-
     void insertData(int id, char* name, float prize, long quantity, int barcode, char* producer, char* category);
 
     void update(char* table, int id, char* column, long new_value);
-
+    void update(char* table, int id, char* column, float new_value);
     void update(char* table, int id, char* column, char* new_value);
 
     void deleteRow(char* table, int id);
@@ -47,7 +46,6 @@ public:
     bool anyExists(char* table);
 
     bool exists(char* table, char* columnName, int value);
-
     bool exists(char* table, char* columnName, string value);
 
     bool authenticate(char* login, char* password);
