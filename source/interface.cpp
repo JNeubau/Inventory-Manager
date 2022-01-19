@@ -109,8 +109,27 @@ void Interface::commands(string command) {
 
         cout << "test - invokes test function" << endl;
         cout << "help - print this help message"<< endl;
+        // menu for products
+        cout << "add - add new product"<< endl;
+        cout << "delete - remove existing product based on it's name"<< endl;
+        cout << "modify - modify existing product"<< endl;
+        // end menu for products
         cout << "exit - close the program" << endl;
         return;
+    }
+
+    /* --------------------- PRODUCT COMMANDS --------------------- */
+    // adds new product to the database
+    if ((!globalUser->isAdmin()) && (command == "add")) {
+
+    }
+    // removes product from the database
+    if ((!globalUser->isAdmin()) && (command == "delete")) {
+        cout << "remove function" << endl;
+    }
+    // allows to change product's fields
+    if ((!globalUser->isAdmin()) && (command == "modify")) {
+        cout << "modify function" << endl;
     }
 
     /* --------------------- ADMIN COMMANDS --------------------- */
@@ -245,9 +264,6 @@ void Interface::commands(string command) {
         cout << "exit - close the program" << endl;
         return;
     }
-
-    /* --------------------- PRODUCT COMMANDS --------------------- */
-
 
     /* -------------------- GLOBAL COMMANDS -------------------- */
     // kills the program

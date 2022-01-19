@@ -16,7 +16,7 @@ inline int productIndex = 0;
 
 inline char* pathLinux = "../database/sqlite3.db";
 inline char* pathWindows = "C:\\Users\\neuba\\CodeProjects\\PO-proj\\Inventory-Manager\\Inventory-Manager\\database\\sqlite3.db";
-inline Database sqldb(pathLinux);
+inline Database sqldb(pathWindows);
 const int loginAttempts = 3;
 const int passwordLength = 8;
 const string domain = "@company.com";
