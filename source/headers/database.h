@@ -54,5 +54,7 @@ public:
 
     int nextId(char* table);
 
+    void clearDB();
+
     void closeDB();
 };

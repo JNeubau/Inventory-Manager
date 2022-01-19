@@ -14,7 +14,7 @@ void Product::deleteProduct(int id) {
 };
 
 void Product::addNewProduct(string name, long number, float money, int code, string producer, string category) {   // nowy produkt
-        ID = productIndex++;
+        ID = sqldb.nextId("PRODUCTS");
 
         quantity = number;
         prize = money;

@@ -1,5 +1,6 @@
 #include "headers/interface.h"
 #include "headers/user.h"
+#include "headers/product.h"
 #include "headers/global_variables.h"
 
 void Interface::run() {
@@ -113,10 +114,39 @@ void Interface::commands(string command) {
         cout << "add - add new product"<< endl;
         cout << "delete - remove existing product based on it's name"<< endl;
         cout << "modify - modify existing product"<< endl;
+        cout << "clear - delete whole table (not recommended)"<< endl;
         // end menu for products
         cout << "exit - close the program" << endl;
         return;
     }
+/*
+    //  ----- CREATING TABLE ----- GIT
+    cout << "Creating table..." << endl;
+    sqldb.createTable("PRODUCTS");
+    cout << "Completed\n" << endl;
+    Product product;
+
+    // ----- ADDING PRODUCTS -----
+    cout << "Add test..." << endl;
+    product.addNewProduct("Srajtasma", 5, 3.99, 84539800, "NULL", "Gospodarstwo Domowe");
+    product.addNewProduct("Piwo", 12, 5.30, 33568700, "NULL", "NULL");
+    product.addNewProduct("Fajki", 2, 17.89, 79359800, "Camel", "Niezbedniki");
+    sqldb.showTable("PRODUCTS");
+    cout << "Completed\n" << endl;
+
+    // ----- REMOVING PRODUCTS -----
+    cout << "Remove test..." << endl;
+    product.deleteProduct(1);
+    sqldb.showTable("PRODUCTS");
+    cout << "Completed\n" << endl;
+
+    // ----- UPDATING PRODUCTS -----
+    cout << "Update test..." << endl;
+    product.updateQuantity(0, 10);
+    sqldb.showTable("PRODUCTS");
+    cout << "Completed\n" << endl;
+ */
+
 
     /* --------------------- PRODUCT COMMANDS --------------------- */
     // adds new product to the database
@@ -126,10 +156,16 @@ void Interface::commands(string command) {
     // removes product from the database
     if ((!globalUser->isAdmin()) && (command == "delete")) {
         cout << "remove function" << endl;
+        // if (sqldb.anyExists("USERS"))
     }
     // allows to change product's fields
     if ((!globalUser->isAdmin()) && (command == "modify")) {
         cout << "modify function" << endl;
+        // if (sqldb.anyExists("USERS"))
+    }
+    // drops the previous table and creates a new clear one
+    if ((!globalUser->isAdmin()) && (command == "clear")) {
+        sqldb.clearDB();
     }
 
     /* --------------------- ADMIN COMMANDS --------------------- */

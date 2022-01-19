@@ -33,6 +33,21 @@ void Database::init() {
         break;
     }
 
+    // TODO: create for PRODUCTS
+    // check if table 'PRODUCTS' exists in the database
+    char *query2 = nullptr;
+    asprintf(&query2, "SELECT 1 FROM sqlite_master WHERE TYPE = 'table' AND NAME = 'PRODUCTS'");
+    sqlite3_stmt *stmt2;
+    rc = sqlite3_prepare_v2(db, query2, strlen(query), &stmt2, nullptr);
+    checkDBErrors();
+    free(query2);
+
+    // if table 'PRODUCTS' does not exist, create it
+    while ((rc = sqlite3_step(stmt2)) != SQLITE_ROW) {
+        cout << "\033[33m'PRODUCTS' table not found.\033[0m\nCreating table..." << endl;
+        createTable("PRODUCTS");
+        break;
+    }
 }
 
 int Database::callback(void* NotUsed, int argc, char** argv, char** azColName)  {
@@ -284,6 +299,18 @@ int Database::nextId(char* table) {
         }
     }
     return 0;
+}
+
+void Database::clearDB() {
+    /* drops database and creates a new one */
+
+    char *query = nullptr;
+    asprintf(&query, "DROP TABLE PRODUCTS;");
+    rc = sqlite3_exec(db, query, callback, nullptr, &zErrMsg);
+    checkDBErrors();
+    free(query);
+
+    sqldb.createTable("PRODUCTS");
 }
 
 void Database::closeDB() {
