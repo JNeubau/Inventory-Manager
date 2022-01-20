@@ -162,7 +162,6 @@ void Interface::commands(string command) {
     }
     // allows to change product's fields
     if ((!globalUser->isAdmin()) && (command == "modify")) {
-        cout << "modify function" << endl;
         if (sqldb.anyExists("PRODUCTS")) {
             string productName;
             cout << "Enter current name of the product that you want to modify: ";
@@ -197,6 +196,10 @@ void Interface::commands(string command) {
                         cout << "Enter new barcode: ";
                         int barcode;
                         cin >> barcode;
+                        while (barcode < 10000000 || barcode > 100000000) {
+                            cout << "\tTry again\n\tBarcode must have 8 numbers and not start with 0: ";
+                            cin >> barcode;
+                        }
                         Product::modifyProduct(productName, barcode);
                         break;
                     case 5:     // producer
@@ -420,12 +423,13 @@ void Interface::newProduct() {
     cin >> quantity;
     cout << "\tPrize for unit: ";
     cin >> prize;
-    // TODO: make sure barcode has 8 digits
     cout << "\tBarcode for the product (must have 8 numbers): ";
     cin >> barcode;
+    while (barcode < 10000000 || barcode > 100000000) {
+        cout << "\tTry again\n\tBarcode must have 8 numbers and not start with 0: ";
+        cin >> barcode;
+    }
     product.addNewProduct(productName, quantity, prize, barcode, producerName, categoryName);
-    cout << std::flush;
-    // TODO: Flushing not working?
 }
 
 void Interface::loginUser() {

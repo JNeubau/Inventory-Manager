@@ -355,7 +355,10 @@ void Database::showRow(char* table, int id) {
 }
 
 void Database::dbToFile() {
-    /* function which saves the whole table in a file */
+    /* function which saves the whole table in a new file */
+    if (fopen("../../Database.txt", "w") != nullptr) {
+        remove("../../Database.txt");
+    }
 
     char *query = nullptr;
     asprintf(&query, "SELECT * FROM PRODUCTS;");
@@ -365,7 +368,10 @@ void Database::dbToFile() {
 }
 
 void Database::barcodesFile() {
-    /* function which saves barcodes and corresponding names to file */
+    /* function which saves barcodes and corresponding names to new file */
+    if (fopen("../../Barcodes.txt", "w") != nullptr) {
+        remove("../../Barcodes.txt");
+    }
 
     char *query = nullptr;
     asprintf(&query, "SELECT PRODUCT_NAME, BARCODE FROM PRODUCTS;");
