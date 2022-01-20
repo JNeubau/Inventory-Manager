@@ -86,7 +86,6 @@ void Interface::init() {
         } else {
             cout << globalUser->getLogin() << "> ";
         }
-        // TODO [Interface::loop()]: implement check if passed input is not empty
         cin >> command;
         commands(command);
     }
@@ -97,7 +96,9 @@ void Interface::commands(string command) {
 
     // Due to lack of time I've created simple 'if' block, because more sophisticated solution (like map) does not work
     // ouf-of-the-box and need a lot of work. ~AM
-    // TODO [Interface::commands()]: implement cleaner solution to the command management
+    // TODO [Interface::commands()]:
+    //  1) implement cleaner solution to the command management
+    //  2) secure inputs
 
     /* --------------------- USER COMMANDS --------------------- */
     // test command to check if user and admin can both use User's methods
@@ -130,104 +131,128 @@ void Interface::commands(string command) {
     /* --------------------- PRODUCT COMMANDS --------------------- */
     // adds new product to the database
     if ((!globalUser->isAdmin()) && (command == "new")) {
+
         newProduct();
+        return;
     }
     // removes product from the database
     if ((!globalUser->isAdmin()) && (command == "remove")) {
         if (sqldb.anyExists("PRODUCTS")) {
-            string columnName;
-            char *tempColumnName;
-            cout << "For which type of value would you like to search?\nNAME || BARCODE" << endl;
-            cin >> columnName;
-            strcpy(tempColumnName, columnName.data());
-            if (strcmp(tempColumnName, "NAME") == 0) {
-                cout << "What's the product's name??" << endl;
-                string name;
-                cin >> name;
-                if (sqldb.exists("PRODUCTS", "PRODUCT_NAME", name)) {
-                    Product::deleteProduct(name);
+            cout << "For which type of value would you like to search?\n\t[n] name\n\t[b] barcode" << endl;
+            while (true) {
+                cout << "? ";
+                string flag;
+                cin >> flag;
+                if (flag[0] == 'n' || flag[0] == 'N') {
+                    cout << "Product name: ";
+                    string name;
+                    cin >> name;
+                    if (sqldb.exists("PRODUCTS", "PRODUCT_NAME", name)) {
+                        Product::deleteProduct(name);
+                    } else {
+                        cout << "\033[1;31mThere is no such product as '" << name <<"'\033[0m" << endl;
+                    }
+                    break;
+                } else if (flag[0] == 'b' || flag[0] == 'B') {
+                    cout << "Product barcode: ";
+                    int barcode;
+                    cin >> barcode;
+                    if (sqldb.exists("PRODUCTS", "BARCODE", barcode)) {
+                        Product::deleteProduct(barcode);
+                    } else {
+                        cout << "\033[1;31mThere is no such barcode as '" << barcode <<"'\033[0m" << endl;
+                    }
+                    break;
+                } else if (flag[0] == 'x' || flag[0] == 'X') {
+                    break;
+                } else {
+                    cout << "Unknown mode, please try again" << endl;
+                    continue;
                 }
-            } else if (strcmp(tempColumnName, "BARCODE") == 0) {
-                cout << "What's the product's barcode??" << endl;
-                int barcode;
-                cin >> barcode;
-                if (sqldb.exists("PRODUCTS", "BARCODE", barcode)) {
-                    Product::deleteProduct(barcode);
-                }
-            } else {
-                cout << "Wrong type of value chosen" << endl;
             }
+
         } else {
             cout << "There's nothing to remove" << endl;
         }
+        return;
     }
     // allows to change product's fields
     if ((!globalUser->isAdmin()) && (command == "modify")) {
+        // TODO [modify command]: tutaj sporo jest do zrobienia, na tym skupiłbym się w pierwszej kolejności
+        //  1) zmieniając najpierw nazwę a potem próbując inną wartość program wpada w pętlę bez wyjścia
+        //  2) to samo jak wpiszesz przy zmiane barcode stringa a nie numer
         if (sqldb.anyExists("PRODUCTS")) {
             string productName;
             cout << "Enter current name of the product that you want to modify: ";
             cin >> productName;
-            string newName;
-            bool exit = false;
-            while (!exit) {
+            if (sqldb.exists("PRODUCTS", "PRODUCT_NAME", productName)) {
+                string newName;
+                bool exit = false;
                 cout << "Which value would you like to modify?" << endl;
                 cout << "1.name || 2.quantity || 3.prize || 4.barcode || 5.producer || 6.category || 7.that's all" << endl;
-                int number;
-                cin >> number;
-                switch (number) {
-                    case 1:     // name
-                        cout << "Enter new name: ";
-                        cin >> newName;
-                        Product::modifyProduct(productName, newName, "PRODUCT_NAME");
-                        productName = newName;
-                        break;
-                    case 2:     // quantity
-                        cout << "Enter new amount: ";
-                        long amount;
-                        cin >> amount;
-                        Product::modifyProduct(productName, amount);
-                        break;
-                    case 3:     // prize
-                        cout << "Enter new prize: ";
-                        float prize;
-                        cin >> prize;
-                        Product::modifyProduct(productName, prize);
-                        break;
-                    case 4:     // barcode
-                        cout << "Enter new barcode: ";
-                        int barcode;
-                        cin >> barcode;
-                        while (barcode < 10000000 || barcode > 100000000) {
-                            cout << "\tTry again\n\tBarcode must have 8 numbers and not start with 0: ";
+                while (!exit) {
+                    cout << "? ";
+                    int number;
+                    cin >> number;
+                    switch (number) {
+                        case 1:     // name
+                            cout << "Enter new name: ";
+                            cin >> newName;
+                            Product::modifyProduct(productName, newName, "PRODUCT_NAME");
+                            productName = newName;
+                            break;
+                        case 2:     // quantity
+                            cout << "Enter new amount: ";
+                            long amount;
+                            cin >> amount;
+                            Product::modifyProduct(productName, amount);
+                            break;
+                        case 3:     // prize
+                            cout << "Enter new prize: ";
+                            float prize;
+                            cin >> prize;
+                            Product::modifyProduct(productName, prize);
+                            break;
+                        case 4:     // barcode
+                            cout << "Enter new barcode: ";
+                            int barcode;
                             cin >> barcode;
-                        }
-                        Product::modifyProduct(productName, barcode);
-                        break;
-                    case 5:     // producer
-                        cout << "Enter new maker: ";
-                        cin >> newName;
-                        Product::modifyProduct(productName, newName, "PRODUCER_NAME");
-                        break;
-                    case 6:     // category
-                        cout << "Enter new category: ";
-                        cin >> newName;
-                        Product::modifyProduct(productName, newName, "CATEGORY");
-                        break;
-                    case 7:
-                        exit = true;
-                        break;
-                    default:
-                        cout << "Wrong option chosen" << endl;
-                        break;
+                            while (barcode < 10000000 || barcode > 100000000) {
+                                cout << "\tTry again\n\tBarcode must have 8 numbers and not start with 0: ";
+                                cin >> barcode;
+                            }
+                            Product::modifyProduct(productName, barcode);
+                            break;
+                        case 5:     // producer
+                            cout << "Enter new maker: ";
+                            cin >> newName;
+                            Product::modifyProduct(productName, newName, "PRODUCER_NAME");
+                            break;
+                        case 6:     // category
+                            cout << "Enter new category: ";
+                            cin >> newName;
+                            Product::modifyProduct(productName, newName, "CATEGORY");
+                            break;
+                        case 7:
+                            exit = true;
+                            break;
+                        default:
+                            cout << "Wrong option chosen" << endl;
+                            break;
+                    }
                 }
+            } else {
+                cout << "\033[1;31mThere is no such product as '" << productName <<"'\033[0m" << endl;
             }
         } else {
             cout << "There's nothing to modify" << endl;
         }
+        return;
     }
     // drops the previous table and creates a new clear one
     if ((!globalUser->isAdmin()) && (command == "clear")) {
         sqldb.clearDB();
+        return;
     }
     // shows information about one product
     if ((!globalUser->isAdmin()) && (command == "show")) {
@@ -236,14 +261,17 @@ void Interface::commands(string command) {
         cin >> name;
         char *tempName = (char *) (malloc(sizeof(char)));
         strcpy(tempName, name.data());
-
+        // TODO [show command]: trzeba byłoby dodać walidację czy produkt znajduje się w bazie, jak nie to wypisuje error. Na ten
+        //   moment zwraca -1, to troszkę brzydkie :/
         int id = sqldb.find("PRODUCTS", "PRODUCT_NAME", tempName);
         cout <<id << endl;
         sqldb.showRow("PRODUCTS", id);
+        return;
     }
     // show all info about products sorted by category
     if ((!globalUser->isAdmin()) && (command == "showCat")) {
         sqldb.showCategories();
+        return;
     }
     // creates a file 'Database.txt' in main folder with all the data from the products database
     if ((!globalUser->isAdmin()) && (command == "importAll")) {
@@ -257,7 +285,6 @@ void Interface::commands(string command) {
     /* --------------------- ADMIN COMMANDS --------------------- */
     // adds user into the database
     if ((globalUser->isAdmin()) && (command == "add")) {
-        // TODO [add command]: implement check if passed input is not empty
         string login, password, email;
         bool is_staff;
         cout << "Create new account ->"<< endl;
@@ -291,7 +318,6 @@ void Interface::commands(string command) {
     }
     // deletes user from the database
     if ((globalUser->isAdmin()) && (command == "delete")) {
-        // TODO [delete command]: implement check if passed input is not empty
         string login;
         cout << "Delete account ->"<< endl;
         cout << "login: ";
@@ -305,7 +331,6 @@ void Interface::commands(string command) {
     }
     // edits the existing user
     if ((globalUser->isAdmin()) && (command == "edit")) {
-        // TODO [modify command]: implement check if passed input is not empty
         string login;
         cout << "Edit account ->"<< endl;
         cout << "login: ";
@@ -399,7 +424,6 @@ void Interface::commands(string command) {
 void Interface::registerUser(bool isStaff) {
     /* perform user registration*/
 
-    // TODO [Interface::registerUser()]: implement check if passed input is not empty
     string firstName;
     string lastName;
     cout << "Sign up ->" << endl;
@@ -440,7 +464,6 @@ void Interface::newProduct() {
 void Interface::loginUser() {
     /* perform user login and exits the program, if user made too many incorrect attempts */
 
-    // TODO [Interface::login()]: implement check if passed input is not empty
     string login;
     string password;
     cout << "Sign in ->" << endl;
