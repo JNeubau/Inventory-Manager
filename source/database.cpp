@@ -354,6 +354,17 @@ void Database::showRow(char* table, int id) {
     free(query);
 }
 
+void Database::showCategories() {
+    /* function which prints the table */
+
+    char *query = nullptr;
+    asprintf(&query, "SELECT * FROM PRODUCTS ORDER BY CATEGORY;");
+    rc = sqlite3_exec(db, query, callback, nullptr, &zErrMsg);
+    cout << "-------------------" << endl;
+    checkDBErrors();
+    free(query);
+}
+
 void Database::dbToFile() {
     /* function which saves the whole table in a new file */
     if (fopen("../../Database.txt", "w") != nullptr) {

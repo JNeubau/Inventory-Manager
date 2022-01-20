@@ -59,6 +59,8 @@ public:
 
     void showRow(char* table, int id);
 
+    void showCategories();
+
     void dbToFile();
 
     void barcodesFile();

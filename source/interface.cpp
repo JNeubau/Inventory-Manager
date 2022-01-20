@@ -119,6 +119,7 @@ void Interface::commands(string command) {
         cout << "modify - modify existing product"<< endl;
         cout << "clear - delete whole table (not recommended)"<< endl;
         cout << "show - show information about one product" << endl;
+        cout << "showCat - show all products sorted by category" << endl;
         cout << "importAll - creat a file with all product's data" << endl;
         cout << "importBarcodes - creat a file with product's name and barcode" << endl;
         // end menu for products
@@ -239,6 +240,10 @@ void Interface::commands(string command) {
         int id = sqldb.find("PRODUCTS", "PRODUCT_NAME", tempName);
         cout <<id << endl;
         sqldb.showRow("PRODUCTS", id);
+    }
+    // show all info about products sorted by category
+    if ((!globalUser->isAdmin()) && (command == "showCat")) {
+        sqldb.showCategories();
     }
     // creates a file 'Database.txt' in main folder with all the data from the products database
     if ((!globalUser->isAdmin()) && (command == "importAll")) {
