@@ -21,6 +21,7 @@ private:
     void init();
 
     static int callback(void* NotUsed, int argc, char** argv, char** azColName);
+    static int fileCallback(void* NotUsed, int argc, char** argv, char** azColName);
 
     void checkDBErrors();
 
@@ -54,6 +55,10 @@ public:
     bool isAdmin(char* login);
 
     int nextId(char* table);
+
+    void showRow(char* table, int id);
+
+    void dbToFile();
 
     void clearDB();
 

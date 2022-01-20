@@ -119,19 +119,12 @@ void Interface::commands(string command) {
         cout << "modify - modify existing product"<< endl;
         cout << "clear - delete whole table (not recommended)"<< endl;
         cout << "show - show information about one product" << endl;
-        cout << "showAll - show all the products information" << endl;
+        cout << "importAll - creat a file with all product's data" << endl;
+        cout << "importBarcodes - creat a file with product's name and barcode" << endl;
         // end menu for products
 
         return;
     }
-/*
-    // ----- UPDATING PRODUCTS -----
-    cout << "Update test..." << endl;
-    product.updateQuantity(0, 10);
-    sqldb.showTable("PRODUCTS");
-    cout << "Completed\n" << endl;
- */
-
 
     /* --------------------- PRODUCT COMMANDS --------------------- */
     // adds new product to the database
@@ -230,6 +223,26 @@ void Interface::commands(string command) {
     }
     // drops the previous table and creates a new clear one
     if ((!globalUser->isAdmin()) && (command == "clear")) {
+        sqldb.clearDB();
+    }
+    // shows information about one product
+    if ((!globalUser->isAdmin()) && (command == "show")) {
+        string name;
+        cout << "Which products detail would you like to see\nName: ";
+        cin >> name;
+        char *tempName = (char *) (malloc(sizeof(char)));
+        strcpy(tempName, name.data());
+
+        int id = sqldb.find("PRODUCTS", "PRODUCT_NAME", tempName);
+        cout <<id << endl;
+        sqldb.showRow("PRODUCTS", id);
+    }
+    // creates a file with all the data from the database
+    if ((!globalUser->isAdmin()) && (command == "importAll")) {
+        sqldb.dbToFile();
+    }
+    // creates a file with names and corresponding barcodes
+    if ((!globalUser->isAdmin()) && (command == "importBarcodes")) {
         sqldb.clearDB();
     }
 

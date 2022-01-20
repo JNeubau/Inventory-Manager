@@ -58,6 +58,22 @@ int Database::callback(void* NotUsed, int argc, char** argv, char** azColName)  
     return 0;
 }
 
+int Database::fileCallback(void* NotUsed, int argc, char** argv, char** azColName)  {
+    FILE *file = fopen("../../Database.txt","at");
+    if (file != NULL) {
+        for (int i = 0; i < argc; i++) {
+            fprintf(file, "%s: %s\n", azColName[i], argv[i]);
+            //file << azColName[i] << ": " << argv[i] << endl;
+        }
+        fprintf(file, "\n");
+//        file << endl;
+    } else {
+    cout << "ERROR while opening a file" << endl;
+    }
+    fclose(file);
+    return 0;
+}
+
 void Database::checkDBErrors() {
     /* logs database warnings and errors, used to debug */
 
@@ -313,6 +329,27 @@ int Database::nextId(char* table) {
         }
     }
     return 0;
+}
+
+void Database::showRow(char* table, int id) {
+    /* function which prints the table */
+
+    char *query = nullptr;
+    asprintf(&query, "SELECT * FROM '%s' WHERE ID = '%d';", table, id);
+    rc = sqlite3_exec(db, query, callback, nullptr, &zErrMsg);
+    cout << "-------------------" << endl;
+    checkDBErrors();
+    free(query);
+}
+//TODO: add path to file or file name
+void Database::dbToFile() {
+    /* function which prints the table */
+
+    char *query = nullptr;
+    asprintf(&query, "SELECT * FROM PRODUCTS;");
+    rc = sqlite3_exec(db, query, fileCallback, nullptr, &zErrMsg);
+    checkDBErrors();
+    free(query);
 }
 
 void Database::clearDB() {
