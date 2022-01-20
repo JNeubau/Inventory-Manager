@@ -25,8 +25,8 @@ public:
 
     void addNewProduct(string name, long number, float money, int code, string producer, string category);
 
-    void modifyProduct(char* name, char* new_val, char* columnName);    // rest
-    void modifyProduct(char* name, long new_value);   // quantity
-    void modifyProduct(char* name, float new_prize);   // new_prize
-    void modifyProduct(char* name, int new_barcode);   // barcode
+    static void modifyProduct(string name, string new_val, string columnName);    // rest
+    static void modifyProduct(string name, long new_value);   // quantity
+    static void modifyProduct(string name, float new_prize);   // new_prize
+    static void modifyProduct(string name, int new_barcode);   // barcode
 };

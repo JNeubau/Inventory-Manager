@@ -33,7 +33,6 @@ void Database::init() {
         break;
     }
 
-    // TODO: create for PRODUCTS
     // check if table 'PRODUCTS' exists in the database
     char *query2 = nullptr;
     asprintf(&query2, "SELECT 1 FROM sqlite_master WHERE TYPE = 'table' AND NAME = 'PRODUCTS'");

@@ -9,7 +9,6 @@
  *          SHOULD NOT be changed or modified by user           */
 inline User *globalUser = new User;
 inline Admin* adminUser = (Admin *) globalUser;
-inline int productIndex = 0;
 
 /* --------------------- GLOBAL VARIABLES --------------------- *
  *                   Feel free to modify them                   */

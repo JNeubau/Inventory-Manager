@@ -125,26 +125,6 @@ void Interface::commands(string command) {
         return;
     }
 /*
-    //  ----- CREATING TABLE ----- GIT
-    cout << "Creating table..." << endl;
-    sqldb.createTable("PRODUCTS");
-    cout << "Completed\n" << endl;
-    ;
-
-    // ----- ADDING PRODUCTS -----
-    cout << "Add test..." << endl;
-    product.addNewProduct("Srajtasma", 5, 3.99, 84539800, "NULL", "Gospodarstwo Domowe");
-    product.addNewProduct("Piwo", 12, 5.30, 33568700, "NULL", "NULL");
-    product.addNewProduct("Fajki", 2, 17.89, 79359800, "Camel", "Niezbedniki");
-    sqldb.showTable("PRODUCTS");
-    cout << "Completed\n" << endl;
-
-    // ----- REMOVING PRODUCTS -----
-    cout << "Remove test..." << endl;
-    product.deleteProduct(1);
-    sqldb.showTable("PRODUCTS");
-    cout << "Completed\n" << endl;
-
     // ----- UPDATING PRODUCTS -----
     cout << "Update test..." << endl;
     product.updateQuantity(0, 10);
@@ -177,7 +157,9 @@ void Interface::commands(string command) {
                 cout << "What's the product's barcode??" << endl;
                 int barcode;
                 cin >> barcode;
-                Product::deleteProduct(barcode);
+                if (sqldb.exists("PRODUCTS", "BARCODE", barcode)) {
+                    Product::deleteProduct(barcode);
+                }
             } else {
                 cout << "Wrong type of value chosen" << endl;
             }
@@ -188,7 +170,63 @@ void Interface::commands(string command) {
     // allows to change product's fields
     if ((!globalUser->isAdmin()) && (command == "modify")) {
         cout << "modify function" << endl;
-        // if (sqldb.anyExists("USERS"))
+        if (sqldb.anyExists("PRODUCTS")) {
+            string productName;
+            cout << "Enter current name of the product that you want to modify: ";
+            cin >> productName;
+            string newName;
+            bool exit = false;
+            while (!exit) {
+                cout << "Which value would you like to modify?" << endl;
+                cout << "1.name || 2.quantity || 3.prize || 4.barcode || 5.producer || 6.category || 7.that's all" << endl;
+                int number;
+                cin >> number;
+                switch (number) {
+                    case 1:     // name
+                        cout << "Enter new name: ";
+                        cin >> newName;
+                        Product::modifyProduct(productName, newName, "PRODUCT_NAME");
+                        productName = newName;
+                        break;
+                    case 2:     // quantity
+                        cout << "Enter new amount: ";
+                        long amount;
+                        cin >> amount;
+                        Product::modifyProduct(productName, amount);
+                        break;
+                    case 3:     // prize
+                        cout << "Enter new prize: ";
+                        float prize;
+                        cin >> prize;
+                        Product::modifyProduct(productName, prize);
+                        break;
+                    case 4:     // barcode
+                        cout << "Enter new barcode: ";
+                        int barcode;
+                        cin >> barcode;
+                        Product::modifyProduct(productName, barcode);
+                        break;
+                    case 5:     // producer
+                        cout << "Enter new maker: ";
+                        cin >> newName;
+                        Product::modifyProduct(productName, newName, "PRODUCER_NAME");
+                        break;
+                    case 6:     // category
+                        cout << "Enter new category: ";
+                        cin >> newName;
+                        Product::modifyProduct(productName, newName, "CATEGORY");
+                        break;
+                    case 7:
+                        exit = true;
+                        break;
+                    default:
+                        cout << "Wrong option chosen" << endl;
+                        break;
+                }
+            }
+        } else {
+            cout << "There's nothing to modify" << endl;
+        }
     }
     // drops the previous table and creates a new clear one
     if ((!globalUser->isAdmin()) && (command == "clear")) {
@@ -369,6 +407,7 @@ void Interface::newProduct() {
     cin >> quantity;
     cout << "\tPrize for unit: ";
     cin >> prize;
+    // TODO: make sure barcode has 8 digits
     cout << "\tBarcode for the product (must have 8 numbers): ";
     cin >> barcode;
     product.addNewProduct(productName, quantity, prize, barcode, producerName, categoryName);
