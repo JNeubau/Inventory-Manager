@@ -43,6 +43,8 @@ public:
 
     void deleteRow(char* table, int id);
 
+    void newProduct();
+
     int find(char* table, char* columnName, char* value);
     int find(char* table, char* columnName, int barcode);
 

@@ -23,8 +23,6 @@ void Product::deleteProduct(int barcode) {
 
 void Product::addNewProduct(string name, long number, float money, int code, string producer, string category) {   // nowy produkt
         ID = sqldb.nextId("PRODUCTS");
-        // TODO [comment]: ten kod powinien być w interface.cpp, żeby trzymać się spójności
-        // TODO [comment]: przydałaby się też walidacja, czy dany produkt już nie istnieje w bazie
         quantity = number;
         prize = money;
         barcode = code;

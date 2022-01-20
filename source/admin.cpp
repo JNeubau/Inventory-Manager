@@ -32,5 +32,4 @@ void Admin::modifyUser(string login, string field, int newValue) {
 
     int index = sqldb.find("USERS", "LOGIN", &login[0]);
     sqldb.update("USERS", index, &field[0], (long)newValue);
-    // TODO: To nie jest todo -> zmieniłam newValue na (long)newValue bo się nie kompilowało, nwm czy ci to odpowiada? Feel free do zmian
 }

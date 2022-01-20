@@ -132,7 +132,7 @@ void Interface::commands(string command) {
     // adds new product to the database
     if ((!globalUser->isAdmin()) && (command == "new")) {
 
-        newProduct();
+        sqldb.newProduct();
         return;
     }
     // removes product from the database
@@ -178,9 +178,6 @@ void Interface::commands(string command) {
     }
     // allows to change product's fields
     if ((!globalUser->isAdmin()) && (command == "modify")) {
-        // TODO [modify command]: tutaj sporo jest do zrobienia, na tym skupiłbym się w pierwszej kolejności
-        //  1) zmieniając najpierw nazwę a potem próbując inną wartość program wpada w pętlę bez wyjścia
-        //  2) to samo jak wpiszesz przy zmiane barcode stringa a nie numer
         if (sqldb.anyExists("PRODUCTS")) {
             string productName;
             cout << "Enter current name of the product that you want to modify: ";
@@ -261,11 +258,12 @@ void Interface::commands(string command) {
         cin >> name;
         char *tempName = (char *) (malloc(sizeof(char)));
         strcpy(tempName, name.data());
-        // TODO [show command]: trzeba byłoby dodać walidację czy produkt znajduje się w bazie, jak nie to wypisuje error. Na ten
-        //   moment zwraca -1, to troszkę brzydkie :/
-        int id = sqldb.find("PRODUCTS", "PRODUCT_NAME", tempName);
-        cout <<id << endl;
-        sqldb.showRow("PRODUCTS", id);
+        if (sqldb.exists("PRODUCTS", "PRODUCT_NAME", name)) {
+            int id = sqldb.find("PRODUCTS", "PRODUCT_NAME", tempName);
+            sqldb.showRow("PRODUCTS", id);
+        } else {
+            cout << "ERROR: this product doesn't exist" << endl;
+        }
         return;
     }
     // show all info about products sorted by category
@@ -433,32 +431,6 @@ void Interface::registerUser(bool isStaff) {
     cin >> lastName;
     User newUser;
     newUser.registerUser(firstName, lastName, isStaff);
-}
-
-void Interface::newProduct() {
-    Product product;
-    string productName, producerName, categoryName;
-    long quantity;
-    float prize;
-    int barcode;
-    cout << "Pass the data of new product:" << endl;
-    cout << "\tProduct's name: ";
-    cin >> productName;
-    cout << "\tProducer: ";
-    cin >> producerName;
-    cout << "\tCategory of the product: ";
-    cin >> categoryName;
-    cout << "\tAmount: ";
-    cin >> quantity;
-    cout << "\tPrize for unit: ";
-    cin >> prize;
-    cout << "\tBarcode for the product (must have 8 numbers): ";
-    cin >> barcode;
-    while (barcode < 10000000 || barcode > 100000000) {
-        cout << "\tTry again\n\tBarcode must have 8 numbers and not start with 0: ";
-        cin >> barcode;
-    }
-    product.addNewProduct(productName, quantity, prize, barcode, producerName, categoryName);
 }
 
 void Interface::loginUser() {

@@ -1,6 +1,7 @@
 #include <asprintf.h>
 #include "headers/database.h"
 #include "headers/global_variables.h"
+#include "headers/product.h"
 
 // TODO: make sure if every function in this module is really necessary, it seems that a lot of functions is obsolete
 
@@ -208,6 +209,38 @@ void Database::deleteRow(char* table, int id) {
     checkDBErrors();
     free(query);
     sqlite3_finalize(stmt);
+}
+
+void Database::newProduct() {
+    Product product;
+    string productName, producerName, categoryName;
+    long quantity;
+    float prize;
+    int barcode;
+    cout << "Pass the data of new product:" << endl;
+    cout << "\tProduct's name: ";
+    cin >> productName;
+    cout << "\tProducer: ";
+    cin >> producerName;
+    cout << "\tCategory of the product: ";
+    cin >> categoryName;
+    cout << "\tAmount: ";
+    cin >> quantity;
+    cout << "\tPrize for unit: ";
+    cin >> prize;
+    cout << "\tBarcode for the product (must have 8 numbers): ";
+    cin >> barcode;
+    while (barcode < 10000000 || barcode > 100000000) {
+        cout << "\tTry again\n\tBarcode must have 8 numbers and not start with 0: ";
+        cin >> barcode;
+    }
+    if (sqldb.exists("PRODUCTS", "NAME", productName)) {
+        cout << "Product with that name already exists" << endl;
+    } else if (sqldb.exists("PRODUCTS", "BARCODE", barcode)) {
+        cout << "Product with that barcode already exists" << endl;
+    } else {
+        product.addNewProduct(productName, quantity, prize, barcode, producerName, categoryName);
+    }
 }
 
 int Database::find(char* table, char* columnName, char* value) {

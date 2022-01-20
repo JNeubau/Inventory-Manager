@@ -18,8 +18,6 @@ private:
 
     void registerUser(bool isStaff);
 
-    void newProduct();
-
     void loginUser();
 
 public:
