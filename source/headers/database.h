@@ -22,6 +22,7 @@ private:
 
     static int callback(void* NotUsed, int argc, char** argv, char** azColName);
     static int fileCallback(void* NotUsed, int argc, char** argv, char** azColName);
+    static int barcodeCallback(void* NotUsed, int argc, char** argv, char** azColName);
 
     void checkDBErrors();
 
@@ -59,6 +60,8 @@ public:
     void showRow(char* table, int id);
 
     void dbToFile();
+
+    void barcodesFile();
 
     void clearDB();
 

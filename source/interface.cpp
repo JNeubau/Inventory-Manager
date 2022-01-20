@@ -237,13 +237,13 @@ void Interface::commands(string command) {
         cout <<id << endl;
         sqldb.showRow("PRODUCTS", id);
     }
-    // creates a file with all the data from the database
+    // creates a file 'Database.txt' in main folder with all the data from the products database
     if ((!globalUser->isAdmin()) && (command == "importAll")) {
         sqldb.dbToFile();
     }
     // creates a file with names and corresponding barcodes
     if ((!globalUser->isAdmin()) && (command == "importBarcodes")) {
-        sqldb.clearDB();
+        sqldb.barcodesFile();
     }
 
     /* --------------------- ADMIN COMMANDS --------------------- */

@@ -63,12 +63,24 @@ int Database::fileCallback(void* NotUsed, int argc, char** argv, char** azColNam
     if (file != NULL) {
         for (int i = 0; i < argc; i++) {
             fprintf(file, "%s: %s\n", azColName[i], argv[i]);
-            //file << azColName[i] << ": " << argv[i] << endl;
         }
         fprintf(file, "\n");
-//        file << endl;
     } else {
     cout << "ERROR while opening a file" << endl;
+    }
+    fclose(file);
+    return 0;
+}
+
+int Database::barcodeCallback(void* NotUsed, int argc, char** argv, char** azColName)  {
+    FILE *file = fopen("../../Barcodes.txt","at");
+    if (file != NULL) {
+        for (int i = 0; i < argc; i++) {
+            fprintf(file, "%s: %s\n", azColName[i], argv[i]);
+        }
+        fprintf(file, "\n");
+    } else {
+        cout << "ERROR while opening a file" << endl;
     }
     fclose(file);
     return 0;
@@ -341,13 +353,23 @@ void Database::showRow(char* table, int id) {
     checkDBErrors();
     free(query);
 }
-//TODO: add path to file or file name
+
 void Database::dbToFile() {
-    /* function which prints the table */
+    /* function which saves the whole table in a file */
 
     char *query = nullptr;
     asprintf(&query, "SELECT * FROM PRODUCTS;");
     rc = sqlite3_exec(db, query, fileCallback, nullptr, &zErrMsg);
+    checkDBErrors();
+    free(query);
+}
+
+void Database::barcodesFile() {
+    /* function which saves barcodes and corresponding names to file */
+
+    char *query = nullptr;
+    asprintf(&query, "SELECT PRODUCT_NAME, BARCODE FROM PRODUCTS;");
+    rc = sqlite3_exec(db, query, barcodeCallback, nullptr, &zErrMsg);
     checkDBErrors();
     free(query);
 }
