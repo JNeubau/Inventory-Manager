@@ -42,6 +42,7 @@ public:
     void deleteRow(char* table, int id);
 
     int find(char* table, char* columnName, char* value);
+    int find(char* table, char* columnName, int barcode);
 
     bool anyExists(char* table);
 

@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include <cstdlib>
 
 using std::string;
 using std::cout;
@@ -16,6 +17,8 @@ private:
     void commands(string command);
 
     void registerUser(bool isStaff);
+
+    void newProduct();
 
     void loginUser();
 

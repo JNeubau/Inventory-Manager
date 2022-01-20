@@ -20,11 +20,13 @@ public:
     Product() = default;;
     ~Product();
 
-    static void deleteProduct(int);
-    void addNewProduct(string, long, float, int, string, string);
+    static void deleteProduct(string name);
+    static void deleteProduct(int barcode);
 
-    void modifyProduct(char*, char*, char*);    // pozostałę
-    void modifyProduct(char*, long);   // quantity
-    void modifyProduct(char*, float);   // new_prize
-    void modifyProduct(char*, int);   // barcode
+    void addNewProduct(string name, long number, float money, int code, string producer, string category);
+
+    void modifyProduct(char* name, char* new_val, char* columnName);    // rest
+    void modifyProduct(char* name, long new_value);   // quantity
+    void modifyProduct(char* name, float new_prize);   // new_prize
+    void modifyProduct(char* name, int new_barcode);   // barcode
 };

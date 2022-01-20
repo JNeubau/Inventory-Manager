@@ -187,8 +187,23 @@ int Database::find(char* table, char* columnName, char* value) {
     /* searches for record with given value in passed table and returns record's id */
 
     char *query = nullptr;
-    int id;
+    int id = -1;
     asprintf(&query, "SELECT ID FROM '%s' WHERE %s = '%s';", table, columnName, value);
+    rc = sqlite3_prepare_v2(db, query, strlen(query), &stmt, nullptr);
+    checkDBErrors();
+    free(query);
+    while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+        id = sqlite3_column_int(stmt, 0);
+    }
+    return id;
+}
+
+int Database::find(char* table, char* columnName, int barcode) {
+    /* searches for record with given value in passed table and returns record's id */
+
+    char *query = nullptr;
+    int id = -1;
+    asprintf(&query, "SELECT ID FROM '%s' WHERE %s = '%d';", table, columnName, barcode);
     rc = sqlite3_prepare_v2(db, query, strlen(query), &stmt, nullptr);
     checkDBErrors();
     free(query);

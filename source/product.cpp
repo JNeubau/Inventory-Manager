@@ -9,8 +9,16 @@ Product::~Product() {            // dekonstructor
     free(productCategory);
 };
 
-void Product::deleteProduct(int id) {
-        sqldb.deleteRow("PRODUCTS", id);
+void Product::deleteProduct(string name) {
+    char *temp = (char *) (malloc(sizeof(char)));
+    strcpy(temp, name.data());
+    int id = sqldb.find("PRODUCTS", "PRODUCT_NAME", temp);
+    sqldb.deleteRow("PRODUCTS", id);
+};
+
+void Product::deleteProduct(int barcode) {
+    int id = sqldb.find("PRODUCTS", "BARCODE", barcode);
+    sqldb.deleteRow("PRODUCTS", id);
 };
 
 void Product::addNewProduct(string name, long number, float money, int code, string producer, string category) {   // nowy produkt

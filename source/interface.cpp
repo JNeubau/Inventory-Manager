@@ -108,15 +108,20 @@ void Interface::commands(string command) {
     // prints help for standard user
     if ((!globalUser->isAdmin()) && (command == "help")) {
 
+        cout << "\tGeneral Commands:"<< endl;
         cout << "test - invokes test function" << endl;
         cout << "help - print this help message"<< endl;
+        cout << "exit - close the program" << endl;
         // menu for products
-        cout << "add - add new product"<< endl;
-        cout << "delete - remove existing product based on it's name"<< endl;
+        cout << "\tProducts MENU:"<< endl;
+        cout << "new - add new product"<< endl;
+        cout << "remove - delete existing product based on it's name"<< endl;
         cout << "modify - modify existing product"<< endl;
         cout << "clear - delete whole table (not recommended)"<< endl;
+        cout << "show - show information about one product" << endl;
+        cout << "showAll - show all the products information" << endl;
         // end menu for products
-        cout << "exit - close the program" << endl;
+
         return;
     }
 /*
@@ -124,7 +129,7 @@ void Interface::commands(string command) {
     cout << "Creating table..." << endl;
     sqldb.createTable("PRODUCTS");
     cout << "Completed\n" << endl;
-    Product product;
+    ;
 
     // ----- ADDING PRODUCTS -----
     cout << "Add test..." << endl;
@@ -150,13 +155,35 @@ void Interface::commands(string command) {
 
     /* --------------------- PRODUCT COMMANDS --------------------- */
     // adds new product to the database
-    if ((!globalUser->isAdmin()) && (command == "add")) {
-
+    if ((!globalUser->isAdmin()) && (command == "new")) {
+        newProduct();
     }
     // removes product from the database
-    if ((!globalUser->isAdmin()) && (command == "delete")) {
-        cout << "remove function" << endl;
-        // if (sqldb.anyExists("USERS"))
+    if ((!globalUser->isAdmin()) && (command == "remove")) {
+        if (sqldb.anyExists("PRODUCTS")) {
+            string columnName;
+            char *tempColumnName;
+            cout << "For which type of value would you like to search?\nNAME || BARCODE" << endl;
+            cin >> columnName;
+            strcpy(tempColumnName, columnName.data());
+            if (strcmp(tempColumnName, "NAME") == 0) {
+                cout << "What's the product's name??" << endl;
+                string name;
+                cin >> name;
+                if (sqldb.exists("PRODUCTS", "PRODUCT_NAME", name)) {
+                    Product::deleteProduct(name);
+                }
+            } else if (strcmp(tempColumnName, "BARCODE") == 0) {
+                cout << "What's the product's barcode??" << endl;
+                int barcode;
+                cin >> barcode;
+                Product::deleteProduct(barcode);
+            } else {
+                cout << "Wrong type of value chosen" << endl;
+            }
+        } else {
+            cout << "There's nothing to remove" << endl;
+        }
     }
     // allows to change product's fields
     if ((!globalUser->isAdmin()) && (command == "modify")) {
@@ -323,6 +350,30 @@ void Interface::registerUser(bool isStaff) {
     cin >> lastName;
     User newUser;
     newUser.registerUser(firstName, lastName, isStaff);
+}
+
+void Interface::newProduct() {
+    Product product;
+    string productName, producerName, categoryName;
+    long quantity;
+    float prize;
+    int barcode;
+    cout << "Pass the data of new product:" << endl;
+    cout << "\tProduct's name: ";
+    cin >> productName;
+    cout << "\tProducer: ";
+    cin >> producerName;
+    cout << "\tCategory of the product: ";
+    cin >> categoryName;
+    cout << "\tAmount: ";
+    cin >> quantity;
+    cout << "\tPrize for unit: ";
+    cin >> prize;
+    cout << "\tBarcode for the product (must have 8 numbers): ";
+    cin >> barcode;
+    product.addNewProduct(productName, quantity, prize, barcode, producerName, categoryName);
+    cout << std::flush;
+    // TODO: Flushing not working?
 }
 
 void Interface::loginUser() {
